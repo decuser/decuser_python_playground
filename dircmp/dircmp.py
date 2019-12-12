@@ -121,7 +121,7 @@ else:
 
 # print a welcome banner
 print("\n+------------------------------------+")
-print(f"|   Welcome to dircmp version {SW_VERSION}    |")
+print(f"|   Welcome to dircmp version {SW_VERSION}  |")
 print("|  Created by Will Senn on 20191210  |")
 print("|       Last updated 20191210        |")
 print("+------------------------------------+")
