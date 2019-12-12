@@ -2,27 +2,32 @@
 
 # Changelog
 #
+# 20191212 0.5.0 added recursion and hidden file support, changed version scheme
+#                to support more minor update versions
 # 20191210 0.4 refactored, added comments, added same name diff digest
 # 20191210 0.3 Added argparse functionality and brief mode support
 # 20191210 0.2 Added duplicate checking in src and dst individually
 # 20191210 0.1 Initial working SW_VERSION
 
 # Wishlist
-#
+# done 20191212 wds recursion and hidden file support
 # done 20191210 wds brief mode (suppress detailed lists)
-#
+
+# TODO - count dirs and files separately
+
 import hashlib
 import sys
-from os import listdir
-from os.path import isfile, join, isdir
-from pathlib import Path
+import re
 import time
+import argparse
+from os import listdir, walk
+from os.path import isfile, join, isdir, relpath
+from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
-import argparse
 
 BLOCKSIZE = 65536
-SW_VERSION = "0.4"
+SW_VERSION = "0.5.0"
 
 # declare some data structures
 src_only = {}
@@ -94,10 +99,16 @@ else:
 		help='a destination directory')
 	parser.add_argument('-b', '--brief', action='store_true',
 		help='Brief mode - suppress file lists')
+	parser.add_argument('-a', '--all', action='store_true',
+		help='Include hidden files in comparisons')
+	parser.add_argument('-r', '--recurse', action='store_true',
+		help='Recurse subdirectories')
 	args = vars(parser.parse_args())
 	srcpath = join(args['srcdir'], '')
 	dstpath = join(args['dstdir'], '')
 	brief = args['brief']
+	all = args['all']
+	recurse = args['recurse']
 
 	# check if src and dst exist and ar directories
 	if(not isdir(srcpath)):
@@ -114,16 +125,41 @@ print(f"|   Welcome to dircmp version {SW_VERSION}    |")
 print("|  Created by Will Senn on 20191210  |")
 print("|       Last updated 20191210        |")
 print("+------------------------------------+")
-if not brief: print("Digest: sha1")
-if not brief: print(f"Source (src): {srcpath}\nDestination (dst): {dstpath}")
-
+if not brief: 
+	print("Digest: sha1")
+	print(f"Source (src): {srcpath}\nDestination (dst): {dstpath}")
+	print(f"Show all files: {all}")
+	print(f"Recurse subdirectories: {recurse}\n")
 # reset the elapsed time and start the real work
 timer.reset()
 
+# method to walk a dir and create a list of dirs and files
+def recurse_subdir(dir, recurse, all):
+	tfiles = []
+	rfiles = []
+	if not recurse:
+		tfiles = listdir(dir)
+	else:
+		for root, dirs, files in walk(dir):
+			tfiles.append(root)
+			for file in files:
+				tfiles.append(join(root, file))
+		tfiles[:] = [relpath(path, dir) for path in tfiles]
+		if(tfiles[0] == "."):
+			tfiles.pop(0)
+	if not all:
+		for f in tfiles:
+			if f.startswith('.'):
+				pass
+			else:
+				rfiles.append(f)
+	else:
+		rfiles = tfiles
+	return rfiles
+
 # Read the source files into src_files list and count them
 if not brief: print(f"Scanning src ...", end="")
-src_files = [f for f in listdir(srcpath) if isfile(join(srcpath, f)) and not f.startswith('.')]
-src_files.sort()
+src_files = recurse_subdir(srcpath, recurse, all)
 num_src_files = len(src_files)
 elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f" {num_src_files} files found ({elapsedtime}s).")
@@ -132,14 +168,15 @@ if not brief: print(f" {num_src_files} files found ({elapsedtime}s).")
 if not brief: print(f"Calculating sha1 digests in src ... ", end="")
 src_files_dict={}
 for f in src_files:
-	hasher = hashlib.sha1()
-	with open(srcpath + f, 'rb') as afile:
-		buf = afile.read(BLOCKSIZE)
-		while len(buf) > 0:
-			hasher.update(buf)
+	if isfile(srcpath + f):
+		hasher = hashlib.sha1()
+		with open(srcpath + f, 'rb') as afile:
 			buf = afile.read(BLOCKSIZE)
-	src_files_dict[f] = hasher.hexdigest()
-	afile.close()
+			while len(buf) > 0:
+				hasher.update(buf)
+				buf = afile.read(BLOCKSIZE)
+		src_files_dict[f] = hasher.hexdigest()
+		afile.close()
 elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f"done ({elapsedtime}s).")
 
@@ -150,25 +187,26 @@ for key, value in src_files_dict.items():
 
 # Read the destination files into dst_files list and count them
 if not brief: print(f"Scanning dst ...", end="")
-dstfiles = [f for f in listdir(dstpath) if isfile(join(dstpath, f)) 
-	and not f.startswith('.')]
-dstfiles.sort()
-num_dst_files = len(dstfiles)
+dst_files = recurse_subdir(dstpath, recurse, all)
+num_dst_files = len(dst_files)
 elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f" {num_dst_files} files found ({elapsedtime}s).")
 
 # Calculate sha1 digests for the dst_files and create dst_files_dict
 if not brief: print(f"Calculating sha1 digests in dst... ", end="")
 dst_files_dict = {}
-for f in dstfiles:
-	hasher = hashlib.sha1()
-	with open(dstpath + f, 'rb') as afile:
-		buf = afile.read(BLOCKSIZE)
-		while len(buf) > 0:
-			hasher.update(buf)
+for f in dst_files:
+	if isfile(dstpath + f):
+		hasher = hashlib.sha1()
+		with open(dstpath + f, 'rb') as afile:
 			buf = afile.read(BLOCKSIZE)
-	dst_files_dict[f] = hasher.hexdigest()
-	afile.close()
+			while len(buf) > 0:
+				hasher.update(buf)
+				buf = afile.read(BLOCKSIZE)
+		dst_files_dict[f] = hasher.hexdigest()
+		afile.close()
+	else:
+		print(f"skipping {f}")
 elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f"done ({elapsedtime}s).")
 
@@ -206,7 +244,6 @@ elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f"done ({elapsedtime}s).")
 
 # Compare the files in src to those in dst
-#***** MORE TO SAY
 if not brief: print(f"Comparing src to dst ...", end="")
 # look for src files in dst
 for key in src_files_dict.keys():
@@ -224,15 +261,15 @@ for key in src_files_dict.keys():
 					src_digest_diff[srchash] = key
 	else:
 		# check if filename is in dst (digest mismatch)
-		if(key in dst_files_dict.keys()):
-			match_name_diff_digest.append([key, srchash, dst_files_dict[key]])
+		skey = re.sub(r'^' + re.escape(srcpath), dstpath, key)
+		if(skey in dst_files_dict.keys()):
+			match_name_diff_digest.append([key, srchash, dst_files_dict[skey]])
 		else:
 			src_only[key] = srchash
 elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f"done ({elapsedtime}s).")
 
 # Compare the files in dst to those in src
-#***** MORE TO SAY
 if not brief: print(f"Comparing dst to src ...", end="")
 # look for src files in dst
 for key in dst_files_dict.keys():
@@ -343,8 +380,8 @@ if not brief: print()
 
 if not brief: print(f"Different names but same digests: {num_diff_name_match_digest} files found.")
 for f in sorted(diff_name_match_digest):
-	if not brief: print(f"{f[0]} {srcpath}{f[1]}")
-	if not brief: print(f"{f[0]} {dstpath}{f[2]}")
+	if not brief: print(f"{f[0]} {f[1]}")
+	if not brief: print(f"{f[0]} {f[2]}")
 if not brief: print()
 
 # Display Summary
