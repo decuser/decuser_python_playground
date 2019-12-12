@@ -123,7 +123,7 @@ else:
 print("\n+------------------------------------+")
 print(f"|   Welcome to dircmp version {SW_VERSION}  |")
 print("|  Created by Will Senn on 20191210  |")
-print("|       Last updated 20191210        |")
+print("|       Last updated 20191212        |")
 print("+------------------------------------+")
 if not brief: 
 	print("Digest: sha1")

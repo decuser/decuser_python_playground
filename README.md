@@ -35,7 +35,7 @@ python dircmp.py tests/default/src tests/default/dst
 	+------------------------------------+
 	|   Welcome to dircmp version 0.5.0  |
 	|  Created by Will Senn on 20191210  |
-	|       Last updated 20191210        |
+	|       Last updated 20191212        |
 	+------------------------------------+
 	Digest: sha1
 	Source (src): tests/default/src/
