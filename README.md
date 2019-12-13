@@ -19,7 +19,7 @@ This utility doesn't recurse subdirectories, but what it does do is:
 
 ## Systems Tested
 * Mac OS X 10.15.1 Catalina with Python 3.7.3
-* Windows 10 1909 with Python 3.8.0
+* ~~Windows 10 1909 with Python 3.8.0~~
 
 ## Notes
 I was tired of trying to understand other compare utilities that didn't seem to do quite what I wanted them to. I'm sure this is a bit of a hack, but it seems to work.
