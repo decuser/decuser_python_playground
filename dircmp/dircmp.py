@@ -10,6 +10,8 @@
 # 20191210 0.1 Initial working SW_VERSION
 
 # Wishlist
+# shallow digest ('random' 100 megs for large files)
+# progress indication during sha1 calcs (simple version, dot every 1%, calc after file)
 # done 20191212 wds recursion and hidden file support
 # done 20191210 wds brief mode (suppress detailed lists)
 
@@ -205,8 +207,6 @@ for f in dst_files:
 				buf = afile.read(BLOCKSIZE)
 		dst_files_dict[f] = hasher.hexdigest()
 		afile.close()
-	else:
-		print(f"skipping {f}")
 elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f"done ({elapsedtime}s).")
 
