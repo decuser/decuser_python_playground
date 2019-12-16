@@ -4,7 +4,7 @@
 #
 # 20191216 0.5.1 added fast digest support, cleaned up a little
 # 20191212 0.5.0 added recursion and hidden file support, changed version scheme
-#                to support more minor update versions
+#				 to support more minor update versions
 # 20191210 0.4 refactored, added comments, added same name diff digest
 # 20191210 0.3 Added argparse functionality and brief mode support
 # 20191210 0.2 Added duplicate checking in src and dst individually
@@ -33,7 +33,8 @@ from datetime import datetime
 DEBUG = False
 BLOCKSIZE = 65536
 SLICE = 128
-BUFFERING = 0 			#-1 for default
+BUFFERING = 0			#-1 for default
+SEED = (10 * 1024 * 1024)
 SW_VERSION = "0.5.0"
 
 # declare some data structures
@@ -46,9 +47,6 @@ diff_name_match_digest = []
 match_name_diff_digest = []
 src_only_duplicates = {}
 dst_only_duplicates = {}
-
-# seed the random number generator
-random.seed((10 * 1024 * 1024))
 
 def display_progress(curr, total, inc):
 	if DEBUG:
@@ -79,48 +77,50 @@ def full_digest(file_to_digest):
 # it only performs the shallow digest on files bigger than 100 megs
 # the algorithm is only invoked with the -f --fast option 
 def shallow_digest(file_to_digest):
-    hasher = hashlib.sha1()
-    
-    size = getsize(file_to_digest)
-    if DEBUG: print(f"size: {size}")
-    # check if size <= 100 MB
-    if size <= (100 * 1024 * 1024):
-        if DEBUG: print("using regular digest")
-        # return regular digest
-        with open(file_to_digest, 'rb', BUFFERING) as afile:
-            buf = afile.read(BLOCKSIZE)
-            while len(buf) > 0:
-                hasher.update(buf)
-                buf = afile.read(BLOCKSIZE)
-        digest = hasher.hexdigest()
-        afile.close()
-    else:
-        numiters = int(size / (10 * 1024 * 1024))
-        if DEBUG: print(f"numiters: {numiters}")
-        cutpoints = [(i * (10 * 1024 * 1024)) for i in range(0, numiters)]
-        numcuts = len(cutpoints)     
-        with open(file_to_digest, "rb", BUFFERING) as afile:
-            for i in range(0, numcuts):
-                if i < numcuts - 1:
-                    for x in random.sample(range(cutpoints[i], cutpoints[i + 1]), SLICE):
-                        afile.seek(x)
-                        buf = afile.read(1)
-                        hasher.update(buf)
-                else:
-                    for x in random.sample(range(cutpoints[i], size - 1), SLICE):
-                        afile.seek(x)
-                        buf = afile.read(1)
-                        hasher.update(buf)
-        afile.close()
-    digest = hasher.hexdigest()
-    if DEBUG: print(digest)
-    return digest
+	# seed the random number generator
+	random.seed(SEED)
+	hasher = hashlib.sha1()
+	size = getsize(file_to_digest)
+	
+	if DEBUG: print(f"size: {size}")
+	# check if size <= 100 MB
+	if size <= (100 * 1024 * 1024):
+		if DEBUG: print("using regular digest")
+		# return regular digest
+		with open(file_to_digest, 'rb', BUFFERING) as afile:
+			buf = afile.read(BLOCKSIZE)
+			while len(buf) > 0:
+				hasher.update(buf)
+				buf = afile.read(BLOCKSIZE)
+		digest = hasher.hexdigest()
+		afile.close()
+	else:
+		numiters = int(size / (10 * 1024 * 1024))
+		if DEBUG: print(f"numiters: {numiters}")
+		cutpoints = [(i * (10 * 1024 * 1024)) for i in range(0, numiters)]
+		numcuts = len(cutpoints)	 
+		with open(file_to_digest, "rb", BUFFERING) as afile:
+			for i in range(0, numcuts):
+				if i < numcuts - 1:
+					for x in random.sample(range(cutpoints[i], cutpoints[i + 1]), SLICE):
+						afile.seek(x)
+						buf = afile.read(1)
+						hasher.update(buf)
+				else:
+					for x in random.sample(range(cutpoints[i], size - 1), SLICE):
+						afile.seek(x)
+						buf = afile.read(1)
+						hasher.update(buf)
+		afile.close()
+	digest = hasher.hexdigest()
+	if DEBUG: print(digest)
+	return digest
 
 # display dictionary in value, key order
 def display_dictionary(dict):
-    for k, v in sorted(dict.items(), key=lambda x: (x[1], x[0])):
-        print(f"{v} {k}")
-    print()
+	for k, v in sorted(dict.items(), key=lambda x: (x[1], x[0])):
+		print(f"{v} {k}")
+	print()
 
 # Class useful for calculating elapsed time
 # provides rough calculations
@@ -129,8 +129,8 @@ def display_dictionary(dict):
 # calculate an elapsed time
 # usage:
 #	instantiate: timer = ElapsedTime()
-#   reset timer: timer.reset()
-#   get elapsed time: timer.elapsed()
+#	reset timer: timer.reset()
+#	get elapsed time: timer.elapsed()
 class ElapsedTime:
 	last_time = time.time()
 	
@@ -206,15 +206,16 @@ else:
 
 # print a welcome banner
 print("\n+------------------------------------+")
-print(f"|   Welcome to dircmp version {SW_VERSION}  |")
-print("|  Created by Will Senn on 20191210  |")
-print("|       Last updated 20191212        |")
+print(f"|	Welcome to dircmp version {SW_VERSION}	|")
+print("|  Created by Will Senn on 20191210	|")
+print("|	   Last updated 20191212		|")
 print("+------------------------------------+")
 if not brief: 
 	print("Digest: sha1")
 	print(f"Source (src): {srcpath}\nDestination (dst): {dstpath}")
 	print(f"Show all files: {all}")
-	print(f"Recurse subdirectories: {recurse}\n")
+	print(f"Recurse subdirectories: {recurse}")
+	print(f"Calculate shallow digests: {fast}\n")
 # reset the elapsed time and start the real work
 timer.reset()
 
@@ -438,7 +439,7 @@ if not brief:
 				print(f"{v} {f}")
 	print()
 
-# Get counts of buckets	
+# Get counts of buckets 
 num_src_only_files = len(src_only)
 num_dst_only_files = len(dst_only)
 num_match_name_digest = len(match_name_digest)
