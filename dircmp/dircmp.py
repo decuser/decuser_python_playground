@@ -2,6 +2,7 @@
 
 # Changelog
 #
+# 20191216 0.5.1 added fast digest support, cleaned up a little
 # 20191212 0.5.0 added recursion and hidden file support, changed version scheme
 #                to support more minor update versions
 # 20191210 0.4 refactored, added comments, added same name diff digest
@@ -22,12 +23,14 @@ import sys
 import re
 import time
 import argparse
+import random
 from os import listdir, walk
-from os.path import isfile, join, isdir, relpath
+from os.path import isfile, join, isdir, relpath, getsize
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
 
+DEBUG = False
 BLOCKSIZE = 65536
 SW_VERSION = "0.5.0"
 
@@ -41,6 +44,71 @@ diff_name_match_digest = []
 match_name_diff_digest = []
 src_only_duplicates = {}
 dst_only_duplicates = {}
+
+# seed the random number generator
+random.seed((10 * 1024 * 1024))
+
+# a method to caculate a complete digest, slow, but accurate, this is the default
+def full_digest(file_to_digest):
+	hasher = hashlib.sha1()
+	with open(file_to_digest, 'rb') as afile:
+			buf = afile.read(BLOCKSIZE)
+			while len(buf) > 0:
+				hasher.update(buf)
+				buf = afile.read(BLOCKSIZE)
+	digest = hasher.hexdigest()
+	afile.close()
+	return digest
+		
+# a method to calculate a shallow digest (quick, dirty, and not terribly accurate)
+# but it ought to be good enough for a fast comparison
+# it is definitely not a tamper or bitrot detection algorithm, but it should detect normal
+# filesystem changes like overwrites and chunked changes
+# it only performs the shallow digest on files bigger than 100 megs
+# the algorithm is only invoked with the -f --fast option 
+def shallow_digest(file_to_digest):
+    hasher = hashlib.sha1()
+    
+    size = getsize(file_to_digest)
+    if DEBUG: print(f"size: {size}")
+    # check if size <= 100 MB
+    if size <= (100 * 1024 * 1024):
+        if DEBUG: print("using regular digest")
+        # return regular digest
+        with open(file_to_digest, 'rb') as afile:
+            buf = afile.read(BLOCKSIZE)
+            while len(buf) > 0:
+                hasher.update(buf)
+                buf = afile.read(BLOCKSIZE)
+        digest = hasher.hexdigest()
+        afile.close()
+    else:
+        numiters = int(size / (10 * 1024 * 1024))
+        if DEBUG: print(f"numiters: {numiters}")
+        cutpoints = [(i * (10 * 1024 * 1024)) for i in range(0, numiters)]
+        numcuts = len(cutpoints)     
+        with open(file_to_digest, "rb") as afile:
+            for i in range(0, numcuts):
+                if i < numcuts - 1:
+                    for x in random.sample(range(cutpoints[i], cutpoints[i + 1]), 256):
+                        afile.seek(x)
+                        buf = afile.read(1)
+                        hasher.update(buf)
+                else:
+                    for x in random.sample(range(cutpoints[i], size - 1), 256):
+                        afile.seek(x)
+                        buf = afile.read(1)
+                        hasher.update(buf)
+        afile.close()
+    digest = hasher.hexdigest()
+    if DEBUG: print(digest)
+    return digest
+
+# display dictionary in value, key order
+def display_dictionary(dict):
+    for k, v in sorted(dict.items(), key=lambda x: (x[1], x[0])):
+        print(f"{v} {k}")
+    print()
 
 # Class useful for calculating elapsed time
 # provides rough calculations
@@ -105,12 +173,15 @@ else:
 		help='Include hidden files in comparisons')
 	parser.add_argument('-r', '--recurse', action='store_true',
 		help='Recurse subdirectories')
+	parser.add_argument('-f', '--fast', action='store_true',
+		help='Perform shallow digests (super fast, but less accurate)')
 	args = vars(parser.parse_args())
 	srcpath = join(args['srcdir'], '')
 	dstpath = join(args['dstdir'], '')
 	brief = args['brief']
 	all = args['all']
 	recurse = args['recurse']
+	fast = args['fast']
 
 	# check if src and dst exist and ar directories
 	if(not isdir(srcpath)):
@@ -171,14 +242,10 @@ if not brief: print(f"Calculating sha1 digests in src ... ", end="")
 src_files_dict={}
 for f in src_files:
 	if isfile(srcpath + f):
-		hasher = hashlib.sha1()
-		with open(srcpath + f, 'rb') as afile:
-			buf = afile.read(BLOCKSIZE)
-			while len(buf) > 0:
-				hasher.update(buf)
-				buf = afile.read(BLOCKSIZE)
-		src_files_dict[f] = hasher.hexdigest()
-		afile.close()
+		if fast:
+			src_files_dict[f] =shallow_digest(srcpath + f)
+		else:
+			src_files_dict[f] =full_digest(srcpath + f)
 elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f"done ({elapsedtime}s).")
 
@@ -199,14 +266,10 @@ if not brief: print(f"Calculating sha1 digests in dst... ", end="")
 dst_files_dict = {}
 for f in dst_files:
 	if isfile(dstpath + f):
-		hasher = hashlib.sha1()
-		with open(dstpath + f, 'rb') as afile:
-			buf = afile.read(BLOCKSIZE)
-			while len(buf) > 0:
-				hasher.update(buf)
-				buf = afile.read(BLOCKSIZE)
-		dst_files_dict[f] = hasher.hexdigest()
-		afile.close()
+		if fast:
+			dst_files_dict[f] = shallow_digest(dstpath + f)
+		else:
+			dst_files_dict[f] = full_digest(dstpath + f)
 elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f"done ({elapsedtime}s).")
 
@@ -357,32 +420,27 @@ num_diff_name_match_digest = len(diff_name_match_digest) * 2
 num_match_name_diff_digest = len(match_name_diff_digest) * 2
 
 # Print buckets
-if not brief: print(f"Exact matches: {num_match_name_digest} files found.")
-for k, v in match_name_digest.items():
-	if not brief: print(f"{v} {k}")
-if not brief: print()
+if not brief: 
+	print(f"Exact matches: {num_match_name_digest} files found.")
+	display_dictionary(match_name_digest)
 
-if not brief: print(f"Only in {srcpath}: {num_src_only_files} files found.")
-for k, v in src_only.items():
-	if not brief: print(f"{v} {k}")
-if not brief: print()
+	print(f"Only in {srcpath}: {num_src_only_files} files found.")
+	display_dictionary(src_only)
 
-if not brief: print(f"Only in {dstpath}: {num_dst_only_files} files found.")
-for k, v in dst_only.items():
-	if not brief: print(f"{v} {k}")
-if not brief: print()
+	print(f"Only in {dstpath}: {num_dst_only_files} files found.")
+	display_dictionary(dst_only)
 
-if not brief: print(f"Same names but different digests: {num_match_name_diff_digest} files found.")
-for f in sorted(match_name_diff_digest):
-	if not brief: print(f"{f[0]} src:{f[1]}")
-	if not brief: print(f"{f[0]} dst:{f[2]}")
-if not brief: print()
+	print(f"Same names but different digests: {num_match_name_diff_digest} files found.")
+	for f in sorted(match_name_diff_digest):
+		print(f"{f[0]} src:{f[1]}")
+		print(f"{f[0]} dst:{f[2]}")
+	print()
 
-if not brief: print(f"Different names but same digests: {num_diff_name_match_digest} files found.")
-for f in sorted(diff_name_match_digest):
-	if not brief: print(f"{f[0]} {f[1]}")
-	if not brief: print(f"{f[0]} {f[2]}")
-if not brief: print()
+	print(f"Different names but same digests: {num_diff_name_match_digest} files found.")
+	for f in sorted(diff_name_match_digest):
+		print(f"{f[0]} {f[1]}")
+		print(f"{f[0]} {f[2]}")
+	print()
 
 # Display Summary
 if not brief: print("Summary\n-------")
