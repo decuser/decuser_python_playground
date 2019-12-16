@@ -32,7 +32,7 @@ from datetime import datetime
 
 DEBUG = False
 BLOCKSIZE = 65536
-SLICE = 128
+SAMPLES = 10
 BUFFERING = 0			#-1 for default
 SEED = (10 * 1024 * 1024)
 SW_VERSION = "0.5.0"
@@ -102,12 +102,12 @@ def shallow_digest(file_to_digest):
 		with open(file_to_digest, "rb", BUFFERING) as afile:
 			for i in range(0, numcuts):
 				if i < numcuts - 1:
-					for x in random.sample(range(cutpoints[i], cutpoints[i + 1]), SLICE):
+					for x in random.sample(range(cutpoints[i], cutpoints[i + 1]), SAMPLES):
 						afile.seek(x)
 						buf = afile.read(1)
 						hasher.update(buf)
 				else:
-					for x in random.sample(range(cutpoints[i], size - 1), SLICE):
+					for x in random.sample(range(cutpoints[i], size - 1), SAMPLES):
 						afile.seek(x)
 						buf = afile.read(1)
 						hasher.update(buf)
