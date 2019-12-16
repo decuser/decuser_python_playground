@@ -32,6 +32,8 @@ from datetime import datetime
 
 DEBUG = False
 BLOCKSIZE = 65536
+SLICE = 128
+BUFFERING = 0 			#-1 for default
 SW_VERSION = "0.5.0"
 
 # declare some data structures
@@ -47,6 +49,16 @@ dst_only_duplicates = {}
 
 # seed the random number generator
 random.seed((10 * 1024 * 1024))
+
+def display_progress(curr, total, inc):
+	if DEBUG:
+		print(f"curr: {curr}")
+		print(f"total: {total}")
+		print(f"inc: {inc}")
+	if total - curr > 0:
+		per_progress = int((total / curr) * 100)
+		if curr % (100 / inc):
+			print(".", end="")
 
 # a method to caculate a complete digest, slow, but accurate, this is the default
 def full_digest(file_to_digest):
@@ -75,7 +87,7 @@ def shallow_digest(file_to_digest):
     if size <= (100 * 1024 * 1024):
         if DEBUG: print("using regular digest")
         # return regular digest
-        with open(file_to_digest, 'rb') as afile:
+        with open(file_to_digest, 'rb', BUFFERING) as afile:
             buf = afile.read(BLOCKSIZE)
             while len(buf) > 0:
                 hasher.update(buf)
@@ -87,15 +99,15 @@ def shallow_digest(file_to_digest):
         if DEBUG: print(f"numiters: {numiters}")
         cutpoints = [(i * (10 * 1024 * 1024)) for i in range(0, numiters)]
         numcuts = len(cutpoints)     
-        with open(file_to_digest, "rb") as afile:
+        with open(file_to_digest, "rb", BUFFERING) as afile:
             for i in range(0, numcuts):
                 if i < numcuts - 1:
-                    for x in random.sample(range(cutpoints[i], cutpoints[i + 1]), 256):
+                    for x in random.sample(range(cutpoints[i], cutpoints[i + 1]), SLICE):
                         afile.seek(x)
                         buf = afile.read(1)
                         hasher.update(buf)
                 else:
-                    for x in random.sample(range(cutpoints[i], size - 1), 256):
+                    for x in random.sample(range(cutpoints[i], size - 1), SLICE):
                         afile.seek(x)
                         buf = afile.read(1)
                         hasher.update(buf)
@@ -230,15 +242,23 @@ def recurse_subdir(dir, recurse, all):
 		rfiles = tfiles
 	return rfiles
 
+def total_files(path, files):
+	total = 0
+	for f in files:
+		total = total + getsize(path + f)
+	return total
+
 # Read the source files into src_files list and count them
 if not brief: print(f"Scanning src ...", end="")
 src_files = recurse_subdir(srcpath, recurse, all)
+src_files_bytes = total_files(srcpath, src_files)
 num_src_files = len(src_files)
 elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f" {num_src_files} files found ({elapsedtime}s).")
 
 # Calculate sha1 digests for the src_files and create src_files_dict
-if not brief: print(f"Calculating sha1 digests in src ... ", end="")
+current_progress = 0
+if not brief: print(f"Calculating sha1 digests in src ", end="")
 src_files_dict={}
 for f in src_files:
 	if isfile(srcpath + f):
@@ -246,8 +266,10 @@ for f in src_files:
 			src_files_dict[f] =shallow_digest(srcpath + f)
 		else:
 			src_files_dict[f] =full_digest(srcpath + f)
+		current_progress = current_progress + getsize(srcpath + f)
+		display_progress(current_progress, src_files_bytes, 50)
 elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f"done ({elapsedtime}s).")
+if not brief: print(f" done ({elapsedtime}s).")
 
 # Create revidx_src_files, a reverse index for searching src_files_dict by value
 revidx_src_files = defaultdict(set)
@@ -257,12 +279,14 @@ for key, value in src_files_dict.items():
 # Read the destination files into dst_files list and count them
 if not brief: print(f"Scanning dst ...", end="")
 dst_files = recurse_subdir(dstpath, recurse, all)
+dst_files_bytes = total_files(dstpath, dst_files)
 num_dst_files = len(dst_files)
 elapsedtime = round(timer.elapsed(), 2)
 if not brief: print(f" {num_dst_files} files found ({elapsedtime}s).")
 
 # Calculate sha1 digests for the dst_files and create dst_files_dict
-if not brief: print(f"Calculating sha1 digests in dst... ", end="")
+current_progress = 0
+if not brief: print(f"Calculating sha1 digests in dst ", end="")
 dst_files_dict = {}
 for f in dst_files:
 	if isfile(dstpath + f):
@@ -270,8 +294,10 @@ for f in dst_files:
 			dst_files_dict[f] = shallow_digest(dstpath + f)
 		else:
 			dst_files_dict[f] = full_digest(dstpath + f)
+		current_progress = current_progress + getsize(dstpath + f)
+		display_progress(current_progress, dst_files_bytes, 50)
 elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f"done ({elapsedtime}s).")
+if not brief: print(f" done ({elapsedtime}s).")
 
 # Create revidx_dst_files, a reverse index for searching dst_files_dict by value
 revidx_dst_files = defaultdict(set)
