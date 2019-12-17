@@ -11,8 +11,8 @@
 # 20191210 0.1 Initial working SW_VERSION
 
 # Wishlist
-# shallow digest ('random' 100 megs for large files)
-# progress indication during sha1 calcs (simple version, dot every 1%, calc after file)
+# done 20191216 shallow digest ('random' 100 megs for large files)
+# done 20191216 progress indication during sha1 calcs (simple version)
 # done 20191212 wds recursion and hidden file support
 # done 20191210 wds brief mode (suppress detailed lists)
 
@@ -32,10 +32,12 @@ from datetime import datetime
 
 DEBUG = False
 BLOCKSIZE = 65536
-SAMPLES = 10
-BUFFERING = 0			#-1 for default
+SAMPLESIZE = (1 * 1024 * 1024)
+BUFFERING = -1			# 0 for no bufferning, -1 for default
 SEED = (10 * 1024 * 1024)
-SW_VERSION = "0.5.0"
+SW_VERSION = "0.5.1"
+CREATED = "20191210"
+UPDATED = "20191216"
 
 # declare some data structures
 src_only = {}
@@ -57,6 +59,7 @@ def display_progress(curr, total, inc):
 		per_progress = int((total / curr) * 100)
 		if curr % (100 / inc):
 			print(".", end="")
+			sys.stdout.flush()
 
 # a method to caculate a complete digest, slow, but accurate, this is the default
 def full_digest(file_to_digest):
@@ -73,9 +76,11 @@ def full_digest(file_to_digest):
 # a method to calculate a shallow digest (quick, dirty, and not terribly accurate)
 # but it ought to be good enough for a fast comparison
 # it is definitely not a tamper or bitrot detection algorithm, but it should detect normal
-# filesystem changes like overwrites and chunked changes
-# it only performs the shallow digest on files bigger than 100 megs
+# filesystem changes like file overwrites
+# it only performs the shallow digest on files bigger than 10 megs
 # the algorithm is only invoked with the -f --fast option 
+# calculates the filesize and encodes it along with the first SAMPLESIZE bytes
+# and last SAMPLESIZE bytes of file
 def shallow_digest(file_to_digest):
 	# seed the random number generator
 	random.seed(SEED)
@@ -83,8 +88,8 @@ def shallow_digest(file_to_digest):
 	size = getsize(file_to_digest)
 	
 	if DEBUG: print(f"size: {size}")
-	# check if size <= 100 MB
-	if size <= (100 * 1024 * 1024):
+	# check if size <= 10 MB
+	if size <= (10 * 1024 * 1024):
 		if DEBUG: print("using regular digest")
 		# return regular digest
 		with open(file_to_digest, 'rb', BUFFERING) as afile:
@@ -95,32 +100,28 @@ def shallow_digest(file_to_digest):
 		digest = hasher.hexdigest()
 		afile.close()
 	else:
-		numiters = int(size / (10 * 1024 * 1024))
-		if DEBUG: print(f"numiters: {numiters}")
-		cutpoints = [(i * (10 * 1024 * 1024)) for i in range(0, numiters)]
-		numcuts = len(cutpoints)	 
 		with open(file_to_digest, "rb", BUFFERING) as afile:
-			for i in range(0, numcuts):
-				if i < numcuts - 1:
-					for x in random.sample(range(cutpoints[i], cutpoints[i + 1]), SAMPLES):
-						afile.seek(x)
-						buf = afile.read(1)
-						hasher.update(buf)
-				else:
-					for x in random.sample(range(cutpoints[i], size - 1), SAMPLES):
-						afile.seek(x)
-						buf = afile.read(1)
-						hasher.update(buf)
+			hasher.update(str.encode(str(size)))
+			buf = afile.read(SAMPLESIZE)
+			hasher.update(buf)
+			afile.seek(size - SAMPLESIZE)
+			buf = afile.read(SAMPLESIZE)
+			hasher.update(buf)			
 		afile.close()
 	digest = hasher.hexdigest()
 	if DEBUG: print(digest)
 	return digest
 
 # display dictionary in value, key order
-def display_dictionary(dict):
-	for k, v in sorted(dict.items(), key=lambda x: (x[1], x[0])):
-		print(f"{v} {k}")
-	print()
+def display_dictionary(dict, sortorder):
+    if sortorder == "kv":
+            for k, v in sorted(dict.items(), key=lambda x: (x[0], x[1])):
+                print(f"{k} {v}")
+            print()
+    elif sortorder == "vk":
+            for k, v in sorted(dict.items(), key=lambda x: (x[1], x[0])):
+                print(f"{v} {k}")
+            print()
 
 # Class useful for calculating elapsed time
 # provides rough calculations
@@ -206,9 +207,9 @@ else:
 
 # print a welcome banner
 print("\n+------------------------------------+")
-print(f"|	Welcome to dircmp version {SW_VERSION}	|")
-print("|  Created by Will Senn on 20191210	|")
-print("|	   Last updated 20191212		|")
+print(f"|  Welcome to dircmp version {SW_VERSION}   |")
+print(f"|  Created by Will Senn on {CREATED}  |")
+print(f"|       Last updated {UPDATED}        |")
 print("+------------------------------------+")
 if not brief: 
 	print("Digest: sha1")
@@ -409,7 +410,7 @@ num_src_only_duplicates = len(src_only_duplicates)
 if not brief:
 	print(f"Duplicates found in {srcpath}: {num_src_only_duplicates} files found.")
 	for v in tvals:
-		keys = revidx_src_only_duplicates.get(v)
+		keys = sorted(revidx_src_only_duplicates.get(v))
 		if keys is not None:
 			for f in keys:
 				print(f"{v} {f}")
@@ -433,7 +434,7 @@ num_dst_only_duplicates = len(dst_only_duplicates)
 if not brief:
 	print(f"Duplicates found in {dstpath}: {num_dst_only_duplicates} files found.")
 	for v in tvals:
-		keys = revidx_dst_only_duplicates.get(v)
+		keys = sorted(revidx_dst_only_duplicates.get(v))
 		if keys is not None:
 			for f in keys:
 				print(f"{v} {f}")
@@ -449,13 +450,13 @@ num_match_name_diff_digest = len(match_name_diff_digest) * 2
 # Print buckets
 if not brief: 
 	print(f"Exact matches: {num_match_name_digest} files found.")
-	display_dictionary(match_name_digest)
+	display_dictionary(match_name_digest, "kv")
 
 	print(f"Only in {srcpath}: {num_src_only_files} files found.")
-	display_dictionary(src_only)
+	display_dictionary(src_only, "kv")
 
 	print(f"Only in {dstpath}: {num_dst_only_files} files found.")
-	display_dictionary(dst_only)
+	display_dictionary(dst_only, "kv")
 
 	print(f"Same names but different digests: {num_match_name_diff_digest} files found.")
 	for f in sorted(match_name_diff_digest):
