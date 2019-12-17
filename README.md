@@ -2,7 +2,7 @@
 A repository for python scripts of interest
 
 # News
-### 20191216.1813 dircmp.py version 0.5.2 ready fast mode and some fixes
+### 20191216.1813 dircmp.py version 0.5.1 ready fast mode and some fixes
 ### 20191212.1302 dircmp.py version 0.5.0 ready with recursion, support for hidden files, and crude tests
 
 # First up - dircmp.py, a *nix utility to compare two directories
