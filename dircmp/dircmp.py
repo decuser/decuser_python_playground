@@ -2,6 +2,7 @@
 
 # Changelog
 #
+# 20191216 0.6.0 refactored
 # 20191216 0.5.1 added fast digest support, cleaned up a little
 # 20191212 0.5.0 added recursion and hidden file support, changed version scheme
 #				 to support more minor update versions
@@ -30,16 +31,17 @@ from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
 
+# Constants
 DEBUG = False
 BLOCKSIZE = 65536
 SAMPLESIZE = (1 * 1024 * 1024)
 BUFFERING = -1			# 0 for no bufferning, -1 for default
 SEED = (10 * 1024 * 1024)
-SW_VERSION = "0.5.1"
+SW_VERSION = "0.6.0"
 CREATED = "20191210"
 UPDATED = "20191216"
 
-# declare some data structures
+# Data Structures
 src_only = {}
 dst_only = {}
 match_name_digest = {}
@@ -50,6 +52,35 @@ match_name_diff_digest = []
 src_only_duplicates = {}
 dst_only_duplicates = {}
 
+# Methods
+
+# Calculate sha1 digests for the src_files and create src_files_dict
+def calculate_sha1s(dir, display, files, args):
+	if not args['brief']: print(f"Calculating sha1 digests in {display} ", end="")
+	files_dict = {}
+	current_progress = 0
+	for f in files:
+		if isfile(dir + f):
+			if args['fast']:
+				files_dict[f] = shallow_digest(dir + f)
+			else:
+				files_dict[f] = full_digest(dir + f)
+			current_progress = current_progress + getsize(dir + f)
+			display_progress(current_progress, src_files_bytes, 50)
+	return files_dict
+
+# Display a dictionary in specified order, default is key, value
+def display_dictionary(dict, sortorder = "kv"):
+    if sortorder == "kv":
+            for k, v in sorted(dict.items(), key=lambda x: (x[0], x[1])):
+                print(f"{k} {v}")
+            print()
+    elif sortorder == "vk":
+            for k, v in sorted(dict.items(), key=lambda x: (x[1], x[0])):
+                print(f"{v} {k}")
+            print()
+
+# Display dots when doing long running tasks (needs improvements)
 def display_progress(curr, total, inc):
 	if DEBUG:
 		print(f"curr: {curr}")
@@ -61,7 +92,23 @@ def display_progress(curr, total, inc):
 			print(".", end="")
 			sys.stdout.flush()
 
-# a method to caculate a complete digest, slow, but accurate, this is the default
+# Display welcome banner
+def display_welcome(version, created, updated, args):
+	print("\n+------------------------------------+")
+	print(f"|  Welcome to dircmp version {SW_VERSION}   |")
+	print(f"|  Created by Will Senn on {CREATED}  |")
+	print(f"|       Last updated {UPDATED}        |")
+	print("+------------------------------------+")
+	if not args['brief']: 
+		print("Digest: sha1")
+		print(f"Source (src): {args['srcdir']}\nDestination (dst): {args['dstdir']}")
+		print(f"Show all files: {args['all']}")
+		print(f"Recurse subdirectories: {args['recurse']}")
+		print(f"Calculate shallow digests: {args['fast']}\n")
+
+# Caculate a sha1 digest from file entire contents of file
+# this is the default method
+# returns the calculated hex encoded digest
 def full_digest(file_to_digest):
 	hasher = hashlib.sha1()
 	with open(file_to_digest, 'rb') as afile:
@@ -72,15 +119,84 @@ def full_digest(file_to_digest):
 	digest = hasher.hexdigest()
 	afile.close()
 	return digest
-		
-# a method to calculate a shallow digest (quick, dirty, and not terribly accurate)
-# but it ought to be good enough for a fast comparison
-# it is definitely not a tamper or bitrot detection algorithm, but it should detect normal
-# filesystem changes like file overwrites
-# it only performs the shallow digest on files bigger than 10 megs
-# the algorithm is only invoked with the -f --fast option 
-# calculates the filesize and encodes it along with the first SAMPLESIZE bytes
-# and last SAMPLESIZE bytes of file
+
+# Get arguments from the command line
+# returns arguments in a dictionary
+def get_arguments():
+	# positional arguments: 
+	#  srcdir			a source directory
+	#  dstdir			a destination directory
+	#
+	# regular arguments:
+	#   -b, --brief		Brief mode - suppress file lists
+	#   -a, --all		Include hidden files in comparisons
+	#   -r, --recurse	Recurse subdirectories
+	#   -f, --fast		Perform shallow digests (super fast, but less accurate)
+	parser = argparse.ArgumentParser(
+		description='Compare 2 directories using sha1 checksums.')
+	parser.add_argument('srcdir', metavar='srcdir', type=str, 
+		help='a source directory')
+	parser.add_argument('dstdir', metavar='dstdir', type=str,
+		help='a destination directory')
+	parser.add_argument('-b', '--brief', action='store_true',
+		help='Brief mode - suppress file lists')
+	parser.add_argument('-a', '--all', action='store_true',
+		help='Include hidden files in comparisons')
+	parser.add_argument('-r', '--recurse', action='store_true',
+		help='Recurse subdirectories')
+	parser.add_argument('-f', '--fast', action='store_true',
+		help='Perform shallow digests (super fast, but less accurate)')
+	args = vars(parser.parse_args())
+	args['srcdir'] = join(args['srcdir'], '')
+	args['dstdir'] = join(args['dstdir'], '')
+
+	# check if src and dst exist and are directories
+	# bail otherwise
+	if(not isdir(args['srcdir'])):
+		print(f"{args['srcdir']} is not a directory")
+		sys.exit()
+
+	if(not isdir(args['dstdir'])):
+		print(f"{args['dstdir']} is not a directory")
+		sys.exit()
+	return args
+
+# Read the source files into src_files list and count them
+def get_files(dir, displayname, args):
+	if not args['brief']: print(f"Scanning {displayname} ...", end="")
+	files = recurse_subdir(dir, args['recurse'], args['all'])
+	files_bytes = total_files(dir, files)
+	num_files = len(files)
+	return [files, files_bytes, num_files]
+
+# Create a list of dirs and files from a root
+def recurse_subdir(dir, recurse, all):
+	tfiles = []
+	rfiles = []
+	if not recurse:
+		tfiles = listdir(dir)
+	else:
+		for root, dirs, files in walk(dir):
+			tfiles.append(root)
+			for file in files:
+				tfiles.append(join(root, file))
+		tfiles[:] = [relpath(path, dir) for path in tfiles]
+		if(tfiles[0] == "."):
+			tfiles.pop(0)
+	if not all:
+		for f in tfiles:
+			if f.startswith('.'):
+				pass
+			else:
+				rfiles.append(f)
+	else:
+		rfiles = tfiles
+	return rfiles
+
+# Calculate a sha1 digest from the encoded filesize in bytes,
+# plus the first and last SAMPLESIZE bytes of file
+# this is the -f --fast method
+# returns the calculated hex encoded digest
 def shallow_digest(file_to_digest):
 	# seed the random number generator
 	random.seed(SEED)
@@ -112,194 +228,83 @@ def shallow_digest(file_to_digest):
 	if DEBUG: print(digest)
 	return digest
 
-# display dictionary in value, key order
-def display_dictionary(dict, sortorder):
-    if sortorder == "kv":
-            for k, v in sorted(dict.items(), key=lambda x: (x[0], x[1])):
-                print(f"{k} {v}")
-            print()
-    elif sortorder == "vk":
-            for k, v in sorted(dict.items(), key=lambda x: (x[1], x[0])):
-                print(f"{v} {k}")
-            print()
-
-# Class useful for calculating elapsed time
-# provides rough calculations
-# Create an instance anytime
-# but call reset just before you want to
-# calculate an elapsed time
-# usage:
-#	instantiate: timer = ElapsedTime()
-#	reset timer: timer.reset()
-#	get elapsed time: timer.elapsed()
-class ElapsedTime:
-	last_time = time.time()
-	
-	# method to show data
-	def elapsed(self):
-		elapsed = time.time() - ElapsedTime.last_time
-		ElapsedTime.last_time = time.time()
-		return elapsed
-	
-	def reset(self):
-		last_time = time.time()
-
-# Function to determine if we are running in a notebook or not
-def isnotebook():
-	try:
-		shell = get_ipython().__class__.__name__
-		if shell == 'ZMQInteractiveShell':
-			return True	  # Jupyter notebook or qtconsole
-		elif shell == 'TerminalInteractiveShell':
-			return False  # Terminal running IPython
-		else:
-			return False  # Other type (?)
-	except NameError:
-		return False	  # Probably standard Python interpreter
-
-# instantiate the ElapseTime utility class
-timer = ElapsedTime()
-
-# save the start time for calculating runtime
-starttime = time.time()
-
-# save the start date time for reporting
-startdt = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-
-# is this a notebook?
-if(isnotebook()):
-	homedir = str(Path.home())
-	srcpath = homedir + "/src/"
-	dstpath = homedir + "/dst/"
-	brief = 'False'
-# otherwise, assume it's a command line, get the arguments
-else:
-	parser = argparse.ArgumentParser(
-		description='Compare 2 directories using sha1 checksums.')
-	parser.add_argument('srcdir', metavar='srcdir', type=str, 
-		help='a source directory')
-	parser.add_argument('dstdir', metavar='dstdir', type=str,
-		help='a destination directory')
-	parser.add_argument('-b', '--brief', action='store_true',
-		help='Brief mode - suppress file lists')
-	parser.add_argument('-a', '--all', action='store_true',
-		help='Include hidden files in comparisons')
-	parser.add_argument('-r', '--recurse', action='store_true',
-		help='Recurse subdirectories')
-	parser.add_argument('-f', '--fast', action='store_true',
-		help='Perform shallow digests (super fast, but less accurate)')
-	args = vars(parser.parse_args())
-	srcpath = join(args['srcdir'], '')
-	dstpath = join(args['dstdir'], '')
-	brief = args['brief']
-	all = args['all']
-	recurse = args['recurse']
-	fast = args['fast']
-
-	# check if src and dst exist and ar directories
-	if(not isdir(srcpath)):
-		print(f"{srcpath} is not a directory")
-		sys.exit()
-
-	if(not isdir(dstpath)):
-		print(f"{dstpath} is not a directory")
-		sys.exit()
-
-# print a welcome banner
-print("\n+------------------------------------+")
-print(f"|  Welcome to dircmp version {SW_VERSION}   |")
-print(f"|  Created by Will Senn on {CREATED}  |")
-print(f"|       Last updated {UPDATED}        |")
-print("+------------------------------------+")
-if not brief: 
-	print("Digest: sha1")
-	print(f"Source (src): {srcpath}\nDestination (dst): {dstpath}")
-	print(f"Show all files: {all}")
-	print(f"Recurse subdirectories: {recurse}")
-	print(f"Calculate shallow digests: {fast}\n")
-# reset the elapsed time and start the real work
-timer.reset()
-
-# method to walk a dir and create a list of dirs and files
-def recurse_subdir(dir, recurse, all):
-	tfiles = []
-	rfiles = []
-	if not recurse:
-		tfiles = listdir(dir)
-	else:
-		for root, dirs, files in walk(dir):
-			tfiles.append(root)
-			for file in files:
-				tfiles.append(join(root, file))
-		tfiles[:] = [relpath(path, dir) for path in tfiles]
-		if(tfiles[0] == "."):
-			tfiles.pop(0)
-	if not all:
-		for f in tfiles:
-			if f.startswith('.'):
-				pass
-			else:
-				rfiles.append(f)
-	else:
-		rfiles = tfiles
-	return rfiles
-
+# Calulate a total size from a list of files
 def total_files(path, files):
 	total = 0
 	for f in files:
 		total = total + getsize(path + f)
 	return total
 
-# Read the source files into src_files list and count them
-if not brief: print(f"Scanning src ...", end="")
-src_files = recurse_subdir(srcpath, recurse, all)
-src_files_bytes = total_files(srcpath, src_files)
-num_src_files = len(src_files)
-elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f" {num_src_files} files found ({elapsedtime}s).")
+# Classes
 
-# Calculate sha1 digests for the src_files and create src_files_dict
-current_progress = 0
-if not brief: print(f"Calculating sha1 digests in src ", end="")
-src_files_dict={}
-for f in src_files:
-	if isfile(srcpath + f):
-		if fast:
-			src_files_dict[f] =shallow_digest(srcpath + f)
-		else:
-			src_files_dict[f] =full_digest(srcpath + f)
-		current_progress = current_progress + getsize(srcpath + f)
-		display_progress(current_progress, src_files_bytes, 50)
-elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f" done ({elapsedtime}s).")
+# Utility class for calculating elapsed time between events
+# Typical usage is to instantiate, reset, and get elapsed time.
+#
+# To instantiate prior to use:
+#	timer = ElapsedTime()
+# To reset and establish a reference time:
+#	timer.reset()
+# To get the elapsed time since the reference:
+#	timer.elapsed()
+#
+class ElapsedTime:
+	last_time = time.time()
+	
+	# class method to show elapsed time
+	def elapsed(self):
+		elapsed = time.time() - ElapsedTime.last_time
+		ElapsedTime.last_time = time.time()
+		return elapsed
+
+	# class method to print elapsed time in (XXs) form
+	def display(self, prefix, suffix, args):
+		if not args['brief']:
+			e = round(self.elapsed(), 2)
+			print(f"{prefix}({e}s){suffix}", end="")
+
+	# class method to reset time
+	def reset(self):
+		last_time = time.time()
+	
+
+# Main program
+
+# save the start date time for reporting
+# save the start time for calculating runtime
+# instantiate the ElapseTime utility class
+start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+start_time = time.time()
+timer = ElapsedTime()
+
+# grab the arguments, validate them, and store them in args dictionary
+args = get_arguments()
+
+# display the welcome banner
+display_welcome(SW_VERSION, CREATED, UPDATED, args)
+
+# reset the timer
+timer.reset()
+
+# get the source files
+[src_files, src_files_bytes, num_src_files] = get_files(args['srcdir'], "src", args)
+timer.display(f" {num_src_files} files found ", ".\n", args)
+
+# calculate src sha1s
+src_files_dict = calculate_sha1s(args['srcdir'], "src", src_files, args)
+timer.display(f" done ", ".\n", args)
 
 # Create revidx_src_files, a reverse index for searching src_files_dict by value
 revidx_src_files = defaultdict(set)
 for key, value in src_files_dict.items():
 	revidx_src_files[value].add(key)
 
-# Read the destination files into dst_files list and count them
-if not brief: print(f"Scanning dst ...", end="")
-dst_files = recurse_subdir(dstpath, recurse, all)
-dst_files_bytes = total_files(dstpath, dst_files)
-num_dst_files = len(dst_files)
-elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f" {num_dst_files} files found ({elapsedtime}s).")
+# get the destination files
+[dst_files, dst_files_bytes, num_dst_files] = get_files(args['dstdir'], "dst", args)
+timer.display(f" {num_dst_files} files found ", ".\n", args)
 
-# Calculate sha1 digests for the dst_files and create dst_files_dict
-current_progress = 0
-if not brief: print(f"Calculating sha1 digests in dst ", end="")
-dst_files_dict = {}
-for f in dst_files:
-	if isfile(dstpath + f):
-		if fast:
-			dst_files_dict[f] = shallow_digest(dstpath + f)
-		else:
-			dst_files_dict[f] = full_digest(dstpath + f)
-		current_progress = current_progress + getsize(dstpath + f)
-		display_progress(current_progress, dst_files_bytes, 50)
-elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f" done ({elapsedtime}s).")
+# calculate dst sha1s
+dst_files_dict = calculate_sha1s(args['dstdir'], "dst", dst_files, args)
+timer.display(f" done ", ".\n", args)
 
 # Create revidx_dst_files, a reverse index for searching dst_files_dict by value
 revidx_dst_files = defaultdict(set)
@@ -308,7 +313,7 @@ for key, value in dst_files_dict.items():
 
 # Analyze src directory for files having duplicate contents
 # add them to src_only_duplicates
-if not brief: print(f"Analyzing src directory ...", end="")
+if not args['brief']: print(f"Analyzing src directory ...", end="")
 # look for duplicate content in src
 for key in src_files_dict.keys():
 	srchash = src_files_dict[key]
@@ -318,11 +323,11 @@ for key in src_files_dict.keys():
 			if(key != fil):
 				src_only_duplicates[key] = srchash
 elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f"done ({elapsedtime}s).")
+if not args['brief']: print(f"done ({elapsedtime}s).")
 
 # Analyze dst directory for files having duplicate contents
 # add them to dst_only_duplicates
-if not brief: print(f"Analyzing dst directory ...", end="")
+if not args['brief']: print(f"Analyzing dst directory ...", end="")
 # look for duplicate content in src
 for key in dst_files_dict.keys():
 	dsthash = dst_files_dict[key]
@@ -332,10 +337,10 @@ for key in dst_files_dict.keys():
 			if(key != fil):
 				dst_only_duplicates[key] = dsthash
 elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f"done ({elapsedtime}s).")
+if not args['brief']: print(f"done ({elapsedtime}s).")
 
 # Compare the files in src to those in dst
-if not brief: print(f"Comparing src to dst ...", end="")
+if not args['brief']: print(f"Comparing src to dst ...", end="")
 # look for src files in dst
 for key in src_files_dict.keys():
 	srchash = src_files_dict[key]
@@ -352,16 +357,16 @@ for key in src_files_dict.keys():
 					src_digest_diff[srchash] = key
 	else:
 		# check if filename is in dst (digest mismatch)
-		skey = re.sub(r'^' + re.escape(srcpath), dstpath, key)
+		skey = re.sub(r'^' + re.escape(args['srcdir']), args['dstdir'], key)
 		if(skey in dst_files_dict.keys()):
 			match_name_diff_digest.append([key, srchash, dst_files_dict[skey]])
 		else:
 			src_only[key] = srchash
 elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f"done ({elapsedtime}s).")
+if not args['brief']: print(f"done ({elapsedtime}s).")
 
 # Compare the files in dst to those in src
-if not brief: print(f"Comparing dst to src ...", end="")
+if not args['brief']: print(f"Comparing dst to src ...", end="")
 # look for src files in dst
 for key in dst_files_dict.keys():
 	dsthash = dst_files_dict[key]
@@ -381,16 +386,16 @@ for key in dst_files_dict.keys():
 		if(key not in src_files_dict.keys()):
 			dst_only[key] = dsthash
 elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f"done ({elapsedtime}s).")
+if not args['brief']: print(f"done ({elapsedtime}s).")
 
 # Reconcile differences
-if not brief: print(f"Reconciling differences ...", end="")
+if not args['brief']: print(f"Reconciling differences ...", end="")
 for k,v in src_digest_diff.items():
 	 for j,u in dst_digest_diff.items():
 		 if(k == j):
 			 diff_name_match_digest.append([k, v, u])
 elapsedtime = round(timer.elapsed(), 2)
-if not brief: print(f"done ({elapsedtime}s).\n")
+if not args['brief']: print(f"done ({elapsedtime}s).\n")
 
 # Count the src only duplicates found
 # Create revidx_src_only_duplicates, a reverse index for searching src_only_duplicates by value
@@ -407,8 +412,8 @@ tvals.sort()
 num_src_only_duplicates = len(src_only_duplicates)
 
 # Display the list of src only duplicates
-if not brief:
-	print(f"Duplicates found in {srcpath}: {num_src_only_duplicates} files found.")
+if not args['brief']:
+	print(f"Duplicates found in {args['srcdir']}: {num_src_only_duplicates} files found.")
 	for v in tvals:
 		keys = sorted(revidx_src_only_duplicates.get(v))
 		if keys is not None:
@@ -431,8 +436,8 @@ tvals.sort()
 num_dst_only_duplicates = len(dst_only_duplicates)
 
 # Display the list of dst only duplicates
-if not brief:
-	print(f"Duplicates found in {dstpath}: {num_dst_only_duplicates} files found.")
+if not args['brief']:
+	print(f"Duplicates found in {args['dstdir']}: {num_dst_only_duplicates} files found.")
 	for v in tvals:
 		keys = sorted(revidx_dst_only_duplicates.get(v))
 		if keys is not None:
@@ -448,14 +453,14 @@ num_diff_name_match_digest = len(diff_name_match_digest) * 2
 num_match_name_diff_digest = len(match_name_diff_digest) * 2
 
 # Print buckets
-if not brief: 
+if not args['brief']: 
 	print(f"Exact matches: {num_match_name_digest} files found.")
 	display_dictionary(match_name_digest, "kv")
 
-	print(f"Only in {srcpath}: {num_src_only_files} files found.")
+	print(f"Only in {args['srcdir']}: {num_src_only_files} files found.")
 	display_dictionary(src_only, "kv")
 
-	print(f"Only in {dstpath}: {num_dst_only_files} files found.")
+	print(f"Only in {args['dstdir']}: {num_dst_only_files} files found.")
 	display_dictionary(dst_only, "kv")
 
 	print(f"Same names but different digests: {num_match_name_diff_digest} files found.")
@@ -471,27 +476,27 @@ if not brief:
 	print()
 
 # Display Summary
-if not brief: print("Summary\n-------")
+if not args['brief']: print("Summary\n-------")
 
-print(f"Started at {startdt}")
+print(f"Started at {start_date}")
 totalfiles = num_src_files + num_dst_files
 print(f"{totalfiles} files analyzed.")
-print(f"{num_src_files} files found in {srcpath}.")
-print(f"{num_dst_files} files found in {dstpath}.")
-print(f"{num_src_only_duplicates} duplicate files found in {srcpath}.")
-print(f"{num_dst_only_duplicates} duplicate files found in {dstpath}.")
+print(f"{num_src_files} files found in {args['srcdir']}.")
+print(f"{num_dst_files} files found in {args['dstdir']}.")
+print(f"{num_src_only_duplicates} duplicate files found in {args['srcdir']}.")
+print(f"{num_dst_only_duplicates} duplicate files found in {args['dstdir']}.")
 print(f"{num_match_name_digest} exact matches found.")
-print(f"{num_src_only_files} files only exist in {srcpath}.")
-print(f"{num_dst_only_files} files only exist in {dstpath}.")
+print(f"{num_src_only_files} files only exist in {args['srcdir']}.")
+print(f"{num_dst_only_files} files only exist in {args['dstdir']}.")
 print(f"{num_match_name_diff_digest} files have same names but different digests.")
 print(f"{num_diff_name_match_digest} files have different names but same digest.")
 
 final = time.time()
 
-totaltime = round(final - starttime, 2)
+totaltime = round(final - start_time, 2)
 print("Finished at ", end="")
 print(datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'))
-if not brief: print()
+if not args['brief']: print()
 
-if not brief: print(f"Total running time: {totaltime}s.")
+if not args['brief']: print(f"Total running time: {totaltime}s.")
 
