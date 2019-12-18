@@ -1,43 +1,44 @@
 python dircmp.py tests/default/src tests/default/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/default/src/
 Destination (dst): tests/default/dst/
 Show all files: False
 Recurse subdirectories: False
+Calculate shallow digests: False
 
 Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ..... done (0.0s).
 Scanning dst ... 7 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/default/src/: 6 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
-c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
-da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Duplicates found in tests/default/dst/: 2 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Exact matches: 4 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/default/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -56,7 +57,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-16 12:48:34.858101
+Started at 2019-12-18 11:17:51.555038
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -67,49 +68,50 @@ Started at 2019-12-16 12:48:34.858101
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-16 12:48:34.861124
+Finished at 2019-12-18 11:17:51.559894
 
 Total running time: 0.0s.
 python dircmp.py -a tests/default/src tests/default/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/default/src/
 Destination (dst): tests/default/dst/
 Show all files: True
 Recurse subdirectories: False
+Calculate shallow digests: False
 
 Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ..... done (0.0s).
 Scanning dst ... 7 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/default/src/: 6 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Duplicates found in tests/default/dst/: 2 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Exact matches: 4 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/default/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -128,7 +130,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-16 12:48:35.030880
+Started at 2019-12-18 11:17:51.716792
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -139,31 +141,32 @@ Started at 2019-12-16 12:48:35.030880
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-16 12:48:35.035100
+Finished at 2019-12-18 11:17:51.720554
 
 Total running time: 0.0s.
 python dircmp.py -r tests/default/src tests/default/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/default/src/
 Destination (dst): tests/default/dst/
 Show all files: False
 Recurse subdirectories: True
+Calculate shallow digests: False
 
 Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ..... done (0.0s).
 Scanning dst ... 7 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/default/src/: 6 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
@@ -178,10 +181,10 @@ Duplicates found in tests/default/dst/: 2 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Exact matches: 4 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/default/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -200,7 +203,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-16 12:48:35.204493
+Started at 2019-12-18 11:17:51.873100
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -211,49 +214,50 @@ Started at 2019-12-16 12:48:35.204493
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-16 12:48:35.209934
+Finished at 2019-12-18 11:17:51.880637
 
 Total running time: 0.01s.
 python dircmp.py -a -r tests/default/src tests/default/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/default/src/
 Destination (dst): tests/default/dst/
 Show all files: True
 Recurse subdirectories: True
+Calculate shallow digests: False
 
 Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ..... done (0.0s).
 Scanning dst ... 7 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/default/src/: 6 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Duplicates found in tests/default/dst/: 2 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Exact matches: 4 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/default/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -272,7 +276,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-16 12:48:35.381140
+Started at 2019-12-18 11:17:52.037869
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -283,49 +287,50 @@ Started at 2019-12-16 12:48:35.381140
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-16 12:48:35.385842
+Finished at 2019-12-18 11:17:52.044609
 
-Total running time: 0.0s.
+Total running time: 0.01s.
 python dircmp.py tests/hidden/src tests/hidden/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/hidden/src/
 Destination (dst): tests/hidden/dst/
 Show all files: False
 Recurse subdirectories: False
+Calculate shallow digests: False
 
 Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ..... done (0.0s).
 Scanning dst ... 7 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/hidden/src/: 6 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Duplicates found in tests/hidden/dst/: 2 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Exact matches: 4 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/hidden/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -344,7 +349,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-16 12:48:35.561299
+Started at 2019-12-18 11:17:52.199145
 16 files analyzed.
 9 files found in tests/hidden/src/.
 7 files found in tests/hidden/dst/.
@@ -355,52 +360,53 @@ Started at 2019-12-16 12:48:35.561299
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-16 12:48:35.564361
+Finished at 2019-12-18 11:17:52.204051
 
 Total running time: 0.0s.
 python dircmp.py -a tests/hidden/src tests/hidden/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/hidden/src/
 Destination (dst): tests/hidden/dst/
 Show all files: True
 Recurse subdirectories: False
+Calculate shallow digests: False
 
 Scanning src ... 10 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ...... done (0.0s).
 Scanning dst ... 9 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ....... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/hidden/src/: 6 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
-da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Duplicates found in tests/hidden/dst/: 4 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Exact matches: 5 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 34391ab0ad55fc972022054524af6bd9982e5f4b .hidden_in_both
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/hidden/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -421,7 +427,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 
 Summary
 -------
-Started at 2019-12-16 12:48:35.728606
+Started at 2019-12-18 11:17:52.359866
 19 files analyzed.
 10 files found in tests/hidden/src/.
 9 files found in tests/hidden/dst/.
@@ -432,49 +438,50 @@ Started at 2019-12-16 12:48:35.728606
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-16 12:48:35.731669
+Finished at 2019-12-18 11:17:52.364342
 
 Total running time: 0.0s.
 python dircmp.py -r tests/hidden/src tests/hidden/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/hidden/src/
 Destination (dst): tests/hidden/dst/
 Show all files: False
 Recurse subdirectories: True
+Calculate shallow digests: False
 
 Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ..... done (0.0s).
 Scanning dst ... 7 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/hidden/src/: 6 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Duplicates found in tests/hidden/dst/: 2 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Exact matches: 4 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/hidden/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -493,7 +500,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-16 12:48:35.863838
+Started at 2019-12-18 11:17:52.523101
 16 files analyzed.
 9 files found in tests/hidden/src/.
 7 files found in tests/hidden/dst/.
@@ -504,52 +511,53 @@ Started at 2019-12-16 12:48:35.863838
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-16 12:48:35.870917
+Finished at 2019-12-18 11:17:52.530220
 
 Total running time: 0.01s.
 python dircmp.py -a -r tests/hidden/src tests/hidden/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/hidden/src/
 Destination (dst): tests/hidden/dst/
 Show all files: True
 Recurse subdirectories: True
+Calculate shallow digests: False
 
 Scanning src ... 10 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ...... done (0.0s).
 Scanning dst ... 9 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ....... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/hidden/src/: 6 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Duplicates found in tests/hidden/dst/: 4 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Exact matches: 5 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 34391ab0ad55fc972022054524af6bd9982e5f4b .hidden_in_both
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/hidden/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -570,7 +578,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 
 Summary
 -------
-Started at 2019-12-16 12:48:36.044648
+Started at 2019-12-18 11:17:52.682515
 19 files analyzed.
 10 files found in tests/hidden/src/.
 9 files found in tests/hidden/dst/.
@@ -581,37 +589,38 @@ Started at 2019-12-16 12:48:36.044648
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-16 12:48:36.049612
+Finished at 2019-12-18 11:17:52.689221
 
-Total running time: 0.0s.
+Total running time: 0.01s.
 python dircmp.py tests/tree/src tests/tree/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/tree/src/
 Destination (dst): tests/tree/dst/
 Show all files: False
 Recurse subdirectories: False
+Calculate shallow digests: False
 
 Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ..... done (0.0s).
 Scanning dst ... 9 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/tree/src/: 6 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
-c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
@@ -620,10 +629,10 @@ Duplicates found in tests/tree/dst/: 2 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Exact matches: 4 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/tree/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -642,7 +651,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-16 12:48:36.223810
+Started at 2019-12-18 11:17:52.838990
 18 files analyzed.
 9 files found in tests/tree/src/.
 9 files found in tests/tree/dst/.
@@ -653,52 +662,53 @@ Started at 2019-12-16 12:48:36.223810
 1 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-16 12:48:36.227429
+Finished at 2019-12-18 11:17:52.842462
 
 Total running time: 0.0s.
 python dircmp.py -a tests/tree/src tests/tree/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/tree/src/
 Destination (dst): tests/tree/dst/
 Show all files: True
 Recurse subdirectories: False
+Calculate shallow digests: False
 
 Scanning src ... 11 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ...... done (0.0s).
 Scanning dst ... 11 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ....... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/tree/src/: 6 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
-da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Duplicates found in tests/tree/dst/: 4 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
-da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Exact matches: 5 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 34391ab0ad55fc972022054524af6bd9982e5f4b .hidden_in_both
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/tree/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -719,7 +729,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 
 Summary
 -------
-Started at 2019-12-16 12:48:36.397761
+Started at 2019-12-18 11:17:53.000227
 22 files analyzed.
 11 files found in tests/tree/src/.
 11 files found in tests/tree/dst/.
@@ -730,51 +740,52 @@ Started at 2019-12-16 12:48:36.397761
 1 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-16 12:48:36.400959
+Finished at 2019-12-18 11:17:53.004539
 
 Total running time: 0.0s.
 python dircmp.py -r tests/tree/src tests/tree/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/tree/src/
 Destination (dst): tests/tree/dst/
 Show all files: False
 Recurse subdirectories: True
+Calculate shallow digests: False
 
 Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ..... done (0.0s).
 Scanning dst ... 11 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/tree/src/: 6 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
-c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Duplicates found in tests/tree/dst/: 4 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
-da39a3ee5e6b4b0d3255bfef95601890afd80709 nonemptydir/.emptyfile
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+da39a3ee5e6b4b0d3255bfef95601890afd80709 nonemptydir/.emptyfile
 
 Exact matches: 4 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/tree/src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
@@ -796,7 +807,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 nonemptydir/.emptyfile
 
 Summary
 -------
-Started at 2019-12-16 12:48:36.575430
+Started at 2019-12-18 11:17:53.158164
 20 files analyzed.
 9 files found in tests/tree/src/.
 11 files found in tests/tree/dst/.
@@ -807,31 +818,32 @@ Started at 2019-12-16 12:48:36.575430
 2 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-16 12:48:36.581400
+Finished at 2019-12-18 11:17:53.165317
 
 Total running time: 0.01s.
 python dircmp.py -a -r tests/tree/src tests/tree/dst
 
-+------------------------------------+
-|   Welcome to dircmp version 0.5.0  |
-|  Created by Will Senn on 20191210  |
-|       Last updated 20191212        |
-+------------------------------------+
++----------------------------------+
+| Welcome to dircmp version 0.6.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20191218		   |
++----------------------------------+
 Digest: sha1
 Source (src): tests/tree/src/
 Destination (dst): tests/tree/dst/
 Show all files: True
 Recurse subdirectories: True
+Calculate shallow digests: False
 
 Scanning src ... 14 files found (0.0s).
-Calculating sha1 digests in src ... done (0.0s).
+Calculating sha1 digests in src ......... done (0.0s).
 Scanning dst ... 13 files found (0.0s).
-Calculating sha1 digests in dst... done (0.0s).
+Calculating sha1 digests in dst ......... done (0.0s).
 Analyzing src directory ...done (0.0s).
 Analyzing dst directory ...done (0.0s).
 Comparing src to dst ...done (0.0s).
 Comparing dst to src ...done (0.0s).
-Reconciling differences ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
 
 Duplicates found in tests/tree/src/: 9 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
@@ -840,28 +852,28 @@ Duplicates found in tests/tree/src/: 9 files found.
 34391ab0ad55fc972022054524af6bd9982e5f4b .hidden_in_both
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
-da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-dir/.hidden-empty-file
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 
 Duplicates found in tests/tree/dst/: 5 files found.
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
-da39a3ee5e6b4b0d3255bfef95601890afd80709 nonemptydir/.emptyfile
-da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+da39a3ee5e6b4b0d3255bfef95601890afd80709 nonemptydir/.emptyfile
 
 Exact matches: 5 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 34391ab0ad55fc972022054524af6bd9982e5f4b .hidden_in_both
 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
 da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
 Only in tests/tree/src/: 3 files found.
+cdfde09f59ba7644de7e7c7d6fd6c7050e0069c9 .hidden-dir/a file in the hidden dir with spaces
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
-cdfde09f59ba7644de7e7c7d6fd6c7050e0069c9 .hidden-dir/a file in the hidden dir with spaces
 
 Only in tests/tree/dst/: 2 files found.
 226b905ec5b38a8aaafe5b4f20d8321cabbb6561 c/testinc.txt
@@ -879,7 +891,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 nonemptydir/.emptyfile
 
 Summary
 -------
-Started at 2019-12-16 12:48:36.746253
+Started at 2019-12-18 11:17:53.319852
 27 files analyzed.
 14 files found in tests/tree/src/.
 13 files found in tests/tree/dst/.
@@ -890,6 +902,6 @@ Started at 2019-12-16 12:48:36.746253
 2 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-16 12:48:36.753832
+Finished at 2019-12-18 11:17:53.326951
 
 Total running time: 0.01s.
