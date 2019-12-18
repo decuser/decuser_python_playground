@@ -26,13 +26,12 @@ import time
 import argparse
 import random
 from os import listdir, walk
-from os.path import isfile, join, isdir, relpath, getsize
+from os.path import isfile, join, isdir, relpath, getsize, split
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
 
 # Constants
-DEBUG = False
 BLOCKSIZE = 65536
 SAMPLESIZE = (1 * 1024 * 1024)
 BUFFERING = -1			# 0 for no bufferning, -1 for default
@@ -157,7 +156,7 @@ def display_duplicates(duplicates, dir, display):
 
 # Display dots when doing long running tasks (needs improvements)
 def display_progress(curr, total, inc):
-	if DEBUG:
+	if args['debug']:
 		print(f"curr: {curr}")
 		print(f"total: {total}")
 		print(f"inc: {inc}")
@@ -176,6 +175,7 @@ def display_welcome():
 	print(f"| Last updated {UPDATED}		   |")
 	print("+----------------------------------+")
 	if not args['brief']: 
+		if args['debug']: print(f"** Debug: True **")
 		print("Digest: sha1")
 		print(f"Source (src): {args['srcdir']}\nDestination (dst): {args['dstdir']}")
 		print(f"Show all files: {args['all']}")
@@ -222,6 +222,8 @@ def get_arguments():
 		help='Recurse subdirectories')
 	parser.add_argument('-f', '--fast', action='store_true',
 		help='Perform shallow digests (super fast, but less accurate)')
+	parser.add_argument('-d', '--debug', action='store_true',
+		help='Debug mode')
 	args = vars(parser.parse_args())
 	args['srcdir'] = join(args['srcdir'], '')
 	args['dstdir'] = join(args['dstdir'], '')
@@ -279,6 +281,7 @@ def recurse_subdir(dir, recurse, all):
 		tfiles = listdir(dir)
 	else:
 		for root, dirs, files in walk(dir):
+			[head, tail] = split(root)
 			tfiles.append(root)
 			for file in files:
 				tfiles.append(join(root, file))
@@ -287,7 +290,8 @@ def recurse_subdir(dir, recurse, all):
 			tfiles.pop(0)
 	if not all:
 		for f in tfiles:
-			if f.startswith('.'):
+			[head, tail] = split(f)
+			if tail.startswith('.') or head.startswith('.'):
 				pass
 			else:
 				rfiles.append(f)
@@ -305,10 +309,10 @@ def shallow_digest(file_to_digest):
 	hasher = hashlib.sha1()
 	size = getsize(file_to_digest)
 	
-	if DEBUG: print(f"size: {size}")
+	if args['debug']: print(f"size: {size}")
 	# check if size <= 10 MB
 	if size <= (10 * 1024 * 1024):
-		if DEBUG: print("using regular digest")
+		if args['debug']: print("using regular digest")
 		# return regular digest
 		with open(file_to_digest, 'rb', BUFFERING) as afile:
 			buf = afile.read(BLOCKSIZE)
@@ -327,7 +331,7 @@ def shallow_digest(file_to_digest):
 			hasher.update(buf)			
 		afile.close()
 	digest = hasher.hexdigest()
-	if DEBUG: print(digest)
+	if args['debug']: print(digest)
 	return digest
 
 # Calulate a total size from a list of files

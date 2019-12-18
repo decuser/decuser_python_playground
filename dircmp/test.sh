@@ -44,6 +44,10 @@ echo "python dircmp.py tests/bugs/bug-7/src tests/bugs/bug-7/dst"
 echo "python dircmp.py tests/bugs/bug-7/src tests/bugs/bug-7/dst" >> test-log.txt
 python dircmp.py tests/bugs/bug-7/src tests/bugs/bug-7/dst >> test-log.txt
 
+echo "python dircmp.py tests/bugs/bug-8/src tests/bugs/bug-8/dst"
+echo "python dircmp.py tests/bugs/bug-8/src tests/bugs/bug-8/dst" >> test-log.txt
+python dircmp.py tests/bugs/bug-8/src tests/bugs/bug-8/dst >> test-log.txt
+
 echo "Inspect test-log.txt as compared with master-test-log.txt,"
 echo "    ignore timings and timestamps"
 echo "Automated comparisons, may be coming soon :)"
