@@ -2,7 +2,7 @@
 
 # Changelog
 #
-# 20191216 0.6.0 refactored
+# 20191218 0.6.0 refactored, embraced global data structures after back and forth
 # 20191216 0.5.1 added fast digest support, cleaned up a little
 # 20191212 0.5.0 added recursion and hidden file support, changed version scheme
 #				 to support more minor update versions
@@ -12,7 +12,7 @@
 # 20191210 0.1 Initial working SW_VERSION
 
 # Wishlist
-# done 20191216 shallow digest ('random' 100 megs for large files)
+# done 20191216 shallow digest (fast version)
 # done 20191216 progress indication during sha1 calcs (simple version)
 # done 20191212 wds recursion and hidden file support
 # done 20191210 wds brief mode (suppress detailed lists)
@@ -39,9 +39,9 @@ BUFFERING = -1			# 0 for no bufferning, -1 for default
 SEED = (10 * 1024 * 1024)
 SW_VERSION = "0.6.0"
 CREATED = "20191210"
-UPDATED = "20191216"
+UPDATED = "20191218"
 
-# Data Structures
+# Global Data Structures
 src_only = {}
 dst_only = {}
 exact_match = {}
@@ -54,9 +54,9 @@ dst_only_duplicates = {}
 
 # Methods
 
-# Calculate sha1 digests for the src_files and create src_files_dict
-# return a dictionary and reverse index
-def calculate_sha1s(dir, display, files, args):
+# Calculate sha1 digests
+# return a dictionary of files and digests and a reverse index of the dictionary
+def calculate_sha1s(dir, display, files):
 	if not args['brief']: print(f"Calculating sha1 digests in {display} ", end="")
 	files_dict = {}
 	current_progress = 0
@@ -76,10 +76,8 @@ def calculate_sha1s(dir, display, files, args):
 	
 	return [files_dict, revidx]
 
-# Compare the files in src to those in dst
-# clunky, need to fix, too many arguments, too many 'globals', crying for class
-def compare_directories(ldict, rrevidx, rdict, exmatch, mname_ddigest, srctxt, dsttxt, args):
-
+# Compare the files in two dictionaries
+def compare_directories(ldict, rrevidx, rdict, srctxt, dsttxt):
 	only = {}
 	digest_diff = {}
 	if not args['brief']: print(f"Comparing {srctxt} to {dsttxt} ...", end="")
@@ -90,7 +88,7 @@ def compare_directories(ldict, rrevidx, rdict, exmatch, mname_ddigest, srctxt, d
 		if dst_match_digest is not None:
 			for fil in dst_match_digest:
 				if(key == fil):
-					exmatch[key] = ahash
+					exact_match[key] = ahash
 				else:
 					if fil in ldict.keys():
 						if(ahash != ldict[fil]):
@@ -101,22 +99,61 @@ def compare_directories(ldict, rrevidx, rdict, exmatch, mname_ddigest, srctxt, d
 			# check if filename is in dst (digest mismatch)
 			skey = re.sub(r'^' + re.escape(args['srcdir']), args['dstdir'], key)
 			if(skey in rdict.keys()):
-				mname_ddigest.append([key, ahash, rdict[skey]])
+					# a hack to prevent displaying the same record twice
+					found = False
+					for k, lv, rv in match_name_diff_digest:
+						if skey == k:
+							found = True
+							break
+						else:
+							pass
+					if not found: match_name_diff_digest.append([key, ahash, rdict[skey]])
 			else:
 				only[key] = ahash
 			
 	return [only, digest_diff]
 
 # Display a dictionary in specified order, default is key, value
-def display_dictionary(dict, sortorder = "kv"):
-    if sortorder == "kv":
-            for k, v in sorted(dict.items(), key=lambda x: (x[0], x[1])):
-                print(f"{k} {v}")
-            print()
-    elif sortorder == "vk":
-            for k, v in sorted(dict.items(), key=lambda x: (x[1], x[0])):
-                print(f"{v} {k}")
-            print()
+def display_dictionary(dict, display, num, sortorder = "kv", displayorder="kv"):
+	if not args['brief']: print(f"{display}: {num} files found.")
+	if sortorder == "kv":
+			for k, v in sorted(dict.items(), key=lambda x: (x[0], x[1])):
+				if displayorder == "kv":
+					print(f"{k} {v}")
+				else:
+					print(f"{v} {k}")
+			print()
+	elif sortorder == "vk":
+			for k, v in sorted(dict.items(), key=lambda x: (x[1], x[0])):
+				if displayorder == "kv":
+					print(f"{k} {v}")
+				else:
+					print(f"{v} {k}")
+			print()
+
+# Display duplicates in a directory, given a dictionary of duplicates
+def display_duplicates(duplicates, dir, display):
+	revidx_duplicates = defaultdict(set)
+	for key, value in duplicates.items():
+		revidx_duplicates[value].add(key)
+
+	# create a sorted list of unique src only duplicate digests
+	tvals = []
+	for i in duplicates.values():
+		if i not in tvals:
+			tvals.append(i)
+	tvals.sort()
+	num_duplicates = len(duplicates)
+
+	# Display the list of src only duplicates
+	if not args['brief']:
+		print(f"Duplicates found in {dir}: {num_duplicates} files found.")
+		for v in tvals:
+			keys = sorted(revidx_duplicates.get(v))
+			if keys is not None:
+				for f in keys:
+					print(f"{v} {f}")
+		print()
 
 # Display dots when doing long running tasks (needs improvements)
 def display_progress(curr, total, inc):
@@ -131,12 +168,12 @@ def display_progress(curr, total, inc):
 			sys.stdout.flush()
 
 # Display welcome banner
-def display_welcome(version, created, updated, args):
-	print("\n+------------------------------------+")
-	print(f"|  Welcome to dircmp version {SW_VERSION}   |")
-	print(f"|  Created by Will Senn on {CREATED}  |")
-	print(f"|       Last updated {UPDATED}        |")
-	print("+------------------------------------+")
+def display_welcome():
+	print("\n+----------------------------------+")
+	print(f"| Welcome to dircmp version {SW_VERSION}  |")
+	print(f"| Created by Will Senn on {CREATED} |")
+	print(f"| Last updated {UPDATED}		   |")
+	print("+----------------------------------+")
 	if not args['brief']: 
 		print("Digest: sha1")
 		print(f"Source (src): {args['srcdir']}\nDestination (dst): {args['dstdir']}")
@@ -166,10 +203,10 @@ def get_arguments():
 	#  dstdir			a destination directory
 	#
 	# regular arguments:
-	#   -b, --brief		Brief mode - suppress file lists
-	#   -a, --all		Include hidden files in comparisons
-	#   -r, --recurse	Recurse subdirectories
-	#   -f, --fast		Perform shallow digests (super fast, but less accurate)
+	#	-b, --brief		Brief mode - suppress file lists
+	#	-a, --all		Include hidden files in comparisons
+	#	-r, --recurse	Recurse subdirectories
+	#	-f, --fast		Perform shallow digests (super fast, but less accurate)
 	parser = argparse.ArgumentParser(
 		description='Compare 2 directories using sha1 checksums.')
 	parser.add_argument('srcdir', metavar='srcdir', type=str, 
@@ -199,9 +236,19 @@ def get_arguments():
 		sys.exit()
 	return args
 
+# Reconcile differences
+def get_diff_names_same_digests(ldigests, rdigests):
+	if not args['brief']: print(f"Checking for different names, same digest ...", end="")
+	digest = []
+	for k,v in ldigests.items():
+		 for j,u in rdigests.items():
+			 if(k == j):
+				 digest.append([k, v, u])
+	return digest
+
 # Analyze src directory for files having duplicate contents
 # return dictionary of duplicates
-def get_duplicates(dict, revidx, display, args):
+def get_duplicates(dict, revidx, display):
 	if not args['brief']: print(f"Analyzing {display} directory ...", end="")
 	
 	duplicates = {}
@@ -216,7 +263,7 @@ def get_duplicates(dict, revidx, display, args):
 	return duplicates
 
 # Read the source files into src_files list and count them
-def get_files(dir, displayname, args):
+def get_files(dir, displayname):
 	if not args['brief']: print(f"Scanning {displayname} ...", end="")
 	files = recurse_subdir(dir, args['recurse'], args['all'])
 	files_bytes = total_files(dir, files)
@@ -311,7 +358,7 @@ class ElapsedTime:
 		return elapsed
 
 	# class method to print elapsed time in (XXs) form
-	def display(self, prefix, suffix, args):
+	def display(self, prefix, suffix):
 		if not args['brief']:
 			e = round(self.elapsed(), 2)
 			print(f"{prefix}({e}s){suffix}", end="")
@@ -334,118 +381,63 @@ timer = ElapsedTime()
 args = get_arguments()
 
 # display the welcome banner
-display_welcome(SW_VERSION, CREATED, UPDATED, args)
+display_welcome()
 
 # reset the timer
 timer.reset()
 
 # get the source files
-[src_files, src_files_bytes, num_src_files] = get_files(args['srcdir'], "src", args)
-timer.display(f" {num_src_files} files found ", ".\n", args)
+[src_files, src_files_bytes, num_src_files] = get_files(args['srcdir'], "src")
+timer.display(f" {num_src_files} files found ", ".\n")
 
 # calculate src sha1s
-[src_files_dict, revidx_src_files] = calculate_sha1s(args['srcdir'], "src", src_files, args)
-timer.display(f" done ", ".\n", args)
+[src_files_dict, revidx_src_files] = calculate_sha1s(args['srcdir'], "src", src_files)
+timer.display(f" done ", ".\n")
 
 # get the destination files
-[dst_files, dst_files_bytes, num_dst_files] = get_files(args['dstdir'], "dst", args)
-timer.display(f" {num_dst_files} files found ", ".\n", args)
+[dst_files, dst_files_bytes, num_dst_files] = get_files(args['dstdir'], "dst")
+timer.display(f" {num_dst_files} files found ", ".\n")
 
 # calculate dst sha1s
-[dst_files_dict, revidx_dst_files] = calculate_sha1s(args['dstdir'], "dst", dst_files, args)
-timer.display(f" done ", ".\n", args)
+[dst_files_dict, revidx_dst_files] = calculate_sha1s(args['dstdir'], "dst", dst_files)
+timer.display(f" done ", ".\n")
 
 # get all duplicates in src
-src_only_duplicates = get_duplicates(src_files_dict, revidx_src_files, "src", args)
-timer.display(f"done ", ".\n", args)
+src_only_duplicates = get_duplicates(src_files_dict, revidx_src_files, "src")
+timer.display(f"done ", ".\n")
 
 # get all duplicates in dst
-dst_only_duplicates = get_duplicates(dst_files_dict, revidx_dst_files, "dst", args)
-timer.display(f"done ", ".\n", args)
+dst_only_duplicates = get_duplicates(dst_files_dict, revidx_dst_files, "dst")
+timer.display(f"done ", ".\n")
 
 # Compare the files in src to those in dst
-[src_only, src_digest_diff] = compare_directories(src_files_dict, revidx_dst_files, dst_files_dict, exact_match, match_name_diff_digest, "src", "dst", args)
-timer.display(f"done ", ".\n", args)
+[src_only, src_digest_diff] = compare_directories(src_files_dict, revidx_dst_files, dst_files_dict, "src", "dst")
+timer.display(f"done ", ".\n")
 
 # Compare the files in dst to those in src
-[dst_only, dst_digest_diff] = 	compare_directories(dst_files_dict, revidx_src_files, src_files_dict, exact_match, match_name_diff_digest, "dst", "src", args)
-timer.display(f"done ", ".\n", args)
+[dst_only, dst_digest_diff] =	compare_directories(dst_files_dict, revidx_src_files, src_files_dict, "dst", "src")
+timer.display(f"done ", ".\n")
 
-# Reconcile differences
-if not args['brief']: print(f"Reconciling differences ...", end="")
-for k,v in src_digest_diff.items():
-	 for j,u in dst_digest_diff.items():
-		 if(k == j):
-			 diff_name_match_digest.append([k, v, u])
-elapsedtime = round(timer.elapsed(), 2)
-if not args['brief']: print(f"done ({elapsedtime}s).\n")
-
-# Count the src only duplicates found
-# Create revidx_src_only_duplicates, a reverse index for searching src_only_duplicates by value
-revidx_src_only_duplicates = defaultdict(set)
-for key, value in src_only_duplicates.items():
-	revidx_src_only_duplicates[value].add(key)
-
-# create a sorted list of unique src only duplicate digests
-tvals = []
-for i in src_only_duplicates.values():
-	if i not in tvals:
-		tvals.append(i)
-tvals.sort()
-num_src_only_duplicates = len(src_only_duplicates)
-
-# Display the list of src only duplicates
-if not args['brief']:
-	print(f"Duplicates found in {args['srcdir']}: {num_src_only_duplicates} files found.")
-	for v in tvals:
-		keys = sorted(revidx_src_only_duplicates.get(v))
-		if keys is not None:
-			for f in keys:
-				print(f"{v} {f}")
-	print()
-
-
-# Count the dst only duplicates found
-# Create revidx_dst_only_duplicates, a reverse index for searching dst_only_duplicates by value
-revidx_dst_only_duplicates = defaultdict(set)
-for key, value in dst_only_duplicates.items():
-	revidx_dst_only_duplicates[value].add(key)
-
-# create a sorted list of unique dst only duplicate digests
-tvals = []
-for i in dst_only_duplicates.values():
-	if i not in tvals:
-		tvals.append(i)
-tvals.sort()
-num_dst_only_duplicates = len(dst_only_duplicates)
-
-# Display the list of dst only duplicates
-if not args['brief']:
-	print(f"Duplicates found in {args['dstdir']}: {num_dst_only_duplicates} files found.")
-	for v in tvals:
-		keys = sorted(revidx_dst_only_duplicates.get(v))
-		if keys is not None:
-			for f in keys:
-				print(f"{v} {f}")
-	print()
+# Get list of files with different names but same digest
+diff_name_match_digest = get_diff_names_same_digests(src_digest_diff, dst_digest_diff)
+timer.display(f"done ", ".\n\n")
 
 # Get counts of buckets 
 num_src_only_files = len(src_only)
 num_dst_only_files = len(dst_only)
 num_exact_match = len(exact_match)
+num_src_only_duplicates = len(src_only_duplicates)
+num_dst_only_duplicates = len(dst_only_duplicates)
 num_diff_name_match_digest = len(diff_name_match_digest) * 2
 num_match_name_diff_digest = len(match_name_diff_digest) * 2
 
 # Print buckets
 if not args['brief']: 
-	print(f"Exact matches: {num_exact_match} files found.")
-	display_dictionary(exact_match, "kv")
-
-	print(f"Only in {args['srcdir']}: {num_src_only_files} files found.")
-	display_dictionary(src_only, "kv")
-
-	print(f"Only in {args['dstdir']}: {num_dst_only_files} files found.")
-	display_dictionary(dst_only, "kv")
+	display_duplicates(src_only_duplicates, args['srcdir'], "src")
+	display_duplicates(dst_only_duplicates, args['dstdir'], "dst")
+	display_dictionary(exact_match, "Exact matches", num_exact_match, "kv", "vk")
+	display_dictionary(src_only, f"Only in {args['srcdir']}", num_src_only_files, "kv", "vk")
+	display_dictionary(dst_only, f"Only in {args['dstdir']}", num_dst_only_files, "kv", "vk")
 
 	print(f"Same names but different digests: {num_match_name_diff_digest} files found.")
 	for f in sorted(match_name_diff_digest):
@@ -461,7 +453,6 @@ if not args['brief']:
 
 # Display Summary
 if not args['brief']: print("Summary\n-------")
-
 print(f"Started at {start_date}")
 totalfiles = num_src_files + num_dst_files
 print(f"{totalfiles} files analyzed.")
