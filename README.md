@@ -2,7 +2,8 @@
 A repository for python scripts of interest
 
 # News
-### 20191218.1115 dircmp.py version 0.6.0 refactored
+### 20191218.1448 dircmp.py version 0.6.1 ready bugfixes 7 and 8 included
+### 20191218.1115 dircmp.py version 0.6.0 ready refactored
 ### 20191216.1813 dircmp.py version 0.5.1 ready fast mode and some fixes
 ### 20191212.1302 dircmp.py version 0.5.0 ready with recursion, support for hidden files, and crude tests
 
@@ -35,9 +36,9 @@ cd decuser_python_playground/dircmp
 python dircmp.py tests/default/src tests/default/dst
 
 	+----------------------------------+
-	| Welcome to dircmp version 0.6.0  |
+	| Welcome to dircmp version 0.6.1  |
 	| Created by Will Senn on 20191210 |
-	| Last updated 20191218            |
+	| Last updated 20191218		       |
 	+----------------------------------+
 	Digest: sha1
 	Source (src): tests/default/src/
@@ -91,7 +92,7 @@ python dircmp.py tests/default/src tests/default/dst
 
 	Summary
 	-------
-	Started at 2019-12-18 11:14:15.748125
+	Started at 2019-12-18 14:29:09.510522
 	16 files analyzed.
 	9 files found in tests/default/src/.
 	7 files found in tests/default/dst/.
@@ -102,7 +103,7 @@ python dircmp.py tests/default/src tests/default/dst
 	1 files only exist in tests/default/dst/.
 	2 files have same names but different digests.
 	2 files have different names but same digest.
-	Finished at 2019-12-18 11:14:15.751805
+	Finished at 2019-12-18 14:29:09.514536
 
 	Total running time: 0.0s.
 # Known Issues

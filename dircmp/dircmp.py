@@ -2,6 +2,7 @@
 
 # Changelog
 #
+# 20191218 0.6.1 bugfixes 7, 8
 # 20191218 0.6.0 refactored, embraced global data structures after back and forth
 # 20191216 0.5.1 added fast digest support, cleaned up a little
 # 20191212 0.5.0 added recursion and hidden file support, changed version scheme
@@ -36,7 +37,7 @@ BLOCKSIZE = 65536
 SAMPLESIZE = (1 * 1024 * 1024)
 BUFFERING = -1			# 0 for no bufferning, -1 for default
 SEED = (10 * 1024 * 1024)
-SW_VERSION = "0.6.0"
+SW_VERSION = "0.6.1"
 CREATED = "20191210"
 UPDATED = "20191218"
 
