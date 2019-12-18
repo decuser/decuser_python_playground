@@ -162,7 +162,8 @@ def display_progress(curr, total, inc):
 		print(f"total: {total}")
 		print(f"inc: {inc}")
 	if total - curr > 0:
-		per_progress = int((total / curr) * 100)
+		# fudge curr as simple fix for div by zero
+		per_progress = int((total / (curr + .00001)) * 100)
 		if curr % (100 / inc):
 			print(".", end="")
 			sys.stdout.flush()

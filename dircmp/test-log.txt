@@ -57,7 +57,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 13:04:32.996149
+Started at 2019-12-18 13:06:31.208233
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -68,7 +68,7 @@ Started at 2019-12-18 13:04:32.996149
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 13:04:32.999801
+Finished at 2019-12-18 13:06:31.211759
 
 Total running time: 0.0s.
 python dircmp.py -a tests/default/src tests/default/dst
@@ -130,7 +130,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 13:04:33.131809
+Started at 2019-12-18 13:06:31.349440
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -141,7 +141,7 @@ Started at 2019-12-18 13:04:33.131809
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 13:04:33.135415
+Finished at 2019-12-18 13:06:31.352998
 
 Total running time: 0.0s.
 python dircmp.py -r tests/default/src tests/default/dst
@@ -159,7 +159,7 @@ Recurse subdirectories: True
 Calculate shallow digests: False
 
 Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ..... done (0.01s).
+Calculating sha1 digests in src ..... done (0.0s).
 Scanning dst ... 7 files found (0.0s).
 Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
@@ -203,7 +203,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 13:04:33.270263
+Started at 2019-12-18 13:06:31.474022
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -214,9 +214,9 @@ Started at 2019-12-18 13:04:33.270263
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 13:04:33.288808
+Finished at 2019-12-18 13:06:31.479266
 
-Total running time: 0.02s.
+Total running time: 0.01s.
 python dircmp.py -a -r tests/default/src tests/default/dst
 
 +----------------------------------+
@@ -276,7 +276,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 13:04:33.406197
+Started at 2019-12-18 13:06:31.614948
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -287,7 +287,7 @@ Started at 2019-12-18 13:04:33.406197
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 13:04:33.412042
+Finished at 2019-12-18 13:06:31.620382
 
 Total running time: 0.01s.
 python dircmp.py tests/hidden/src tests/hidden/dst
@@ -349,7 +349,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 13:04:33.556019
+Started at 2019-12-18 13:06:31.757944
 16 files analyzed.
 9 files found in tests/hidden/src/.
 7 files found in tests/hidden/dst/.
@@ -360,9 +360,9 @@ Started at 2019-12-18 13:04:33.556019
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 13:04:33.561344
+Finished at 2019-12-18 13:06:31.761406
 
-Total running time: 0.01s.
+Total running time: 0.0s.
 python dircmp.py -a tests/hidden/src tests/hidden/dst
 
 +----------------------------------+
@@ -427,7 +427,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 
 Summary
 -------
-Started at 2019-12-18 13:04:33.697015
+Started at 2019-12-18 13:06:31.880852
 19 files analyzed.
 10 files found in tests/hidden/src/.
 9 files found in tests/hidden/dst/.
@@ -438,7 +438,7 @@ Started at 2019-12-18 13:04:33.697015
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-18 13:04:33.701309
+Finished at 2019-12-18 13:06:31.885044
 
 Total running time: 0.0s.
 python dircmp.py -r tests/hidden/src tests/hidden/dst
@@ -500,7 +500,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 13:04:33.838241
+Started at 2019-12-18 13:06:32.021762
 16 files analyzed.
 9 files found in tests/hidden/src/.
 7 files found in tests/hidden/dst/.
@@ -511,7 +511,7 @@ Started at 2019-12-18 13:04:33.838241
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 13:04:33.844274
+Finished at 2019-12-18 13:06:32.027363
 
 Total running time: 0.01s.
 python dircmp.py -a -r tests/hidden/src tests/hidden/dst
@@ -578,7 +578,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 
 Summary
 -------
-Started at 2019-12-18 13:04:33.979984
+Started at 2019-12-18 13:06:32.163833
 19 files analyzed.
 10 files found in tests/hidden/src/.
 9 files found in tests/hidden/dst/.
@@ -589,7 +589,7 @@ Started at 2019-12-18 13:04:33.979984
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-18 13:04:33.987126
+Finished at 2019-12-18 13:06:32.169889
 
 Total running time: 0.01s.
 python dircmp.py tests/tree/src tests/tree/dst
@@ -651,7 +651,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 13:04:34.122556
+Started at 2019-12-18 13:06:32.289074
 18 files analyzed.
 9 files found in tests/tree/src/.
 9 files found in tests/tree/dst/.
@@ -662,7 +662,7 @@ Started at 2019-12-18 13:04:34.122556
 1 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 13:04:34.127610
+Finished at 2019-12-18 13:06:32.292595
 
 Total running time: 0.0s.
 python dircmp.py -a tests/tree/src tests/tree/dst
@@ -729,7 +729,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 
 Summary
 -------
-Started at 2019-12-18 13:04:34.266068
+Started at 2019-12-18 13:06:32.430892
 22 files analyzed.
 11 files found in tests/tree/src/.
 11 files found in tests/tree/dst/.
@@ -740,9 +740,9 @@ Started at 2019-12-18 13:04:34.266068
 1 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-18 13:04:34.270123
+Finished at 2019-12-18 13:06:32.435964
 
-Total running time: 0.0s.
+Total running time: 0.01s.
 python dircmp.py -r tests/tree/src tests/tree/dst
 
 +----------------------------------+
@@ -807,7 +807,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 nonemptydir/.emptyfile
 
 Summary
 -------
-Started at 2019-12-18 13:04:34.404800
+Started at 2019-12-18 13:06:32.575201
 20 files analyzed.
 9 files found in tests/tree/src/.
 11 files found in tests/tree/dst/.
@@ -818,7 +818,7 @@ Started at 2019-12-18 13:04:34.404800
 2 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-18 13:04:34.413053
+Finished at 2019-12-18 13:06:32.581365
 
 Total running time: 0.01s.
 python dircmp.py -a -r tests/tree/src tests/tree/dst
@@ -891,7 +891,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 nonemptydir/.emptyfile
 
 Summary
 -------
-Started at 2019-12-18 13:04:34.552300
+Started at 2019-12-18 13:06:32.704647
 27 files analyzed.
 14 files found in tests/tree/src/.
 13 files found in tests/tree/dst/.
@@ -902,7 +902,7 @@ Started at 2019-12-18 13:04:34.552300
 2 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-18 13:04:34.561046
+Finished at 2019-12-18 13:06:32.711515
 
 Total running time: 0.01s.
 python dircmp.py tests/bugs/bug-7/src tests/bugs/bug-7/dst
@@ -947,7 +947,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 a
 
 Summary
 -------
-Started at 2019-12-18 13:04:34.695598
+Started at 2019-12-18 13:06:32.853818
 3 files analyzed.
 2 files found in tests/bugs/bug-7/src/.
 1 files found in tests/bugs/bug-7/dst/.
@@ -958,6 +958,6 @@ Started at 2019-12-18 13:04:34.695598
 0 files only exist in tests/bugs/bug-7/dst/.
 0 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 13:04:34.699041
+Finished at 2019-12-18 13:06:32.856091
 
 Total running time: 0.0s.
