@@ -9,9 +9,12 @@ A repository for python scripts of interest
 ### 20191212.1302 dircmp.py version 0.5.0 ready with recursion, support for hidden files, and crude tests
 
 # First up - dircmp.py, a *nix utility to compare two directories
-This utility doesn't recurse subdirectories, but what it does do is:
+What it does is:
 
 * Calculate sha1 checksums for all non-hidden files in a src and dst directory
+* Supports recursion
+* Supports hidden directories and files
+* Supports fast digests (not terribly accurate, but sufficient for quick scanning)
 * Gets a list and count of files that:
   * Only exist in src
   * Only exist in dst
@@ -110,3 +113,4 @@ python dircmp.py tests/default/src tests/default/dst
 # Known Issues
 
 * the comparison effectively ignores empty directories - git ignores them too and this makes git hosted tests problematic for this sorta thing
+* the total files analyzed calculation is imperfect, all other totals are precise. It's a bug and it's in the issues.
