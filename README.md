@@ -110,7 +110,8 @@ python dircmp.py tests/default/src tests/default/dst
 	Finished at 2019-12-18 14:29:09.514536
 
 	Total running time: 0.0s.
-# Known Issues
+```
+## Known Issues
 
 * the comparison effectively ignores empty directories - git ignores them too and this 
 	makes git hosted tests problematic for this sorta thing
