@@ -112,5 +112,7 @@ python dircmp.py tests/default/src tests/default/dst
 	Total running time: 0.0s.
 # Known Issues
 
-* the comparison effectively ignores empty directories - git ignores them too and this makes git hosted tests problematic for this sorta thing
-* the total files analyzed calculation is imperfect, all other totals are precise. It's a bug and it's in the issues.
+* the comparison effectively ignores empty directories - git ignores them too and this 
+	makes git hosted tests problematic for this sorta thing
+* the total files analyzed calculation is imperfect, all other totals are precise. 
+	It's a bug and it's in the issues.
