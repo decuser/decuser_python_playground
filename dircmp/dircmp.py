@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# canonical source located at https://github.com/decuser/decuser_python_playground.git
 
 # Changelog
 #
