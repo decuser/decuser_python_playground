@@ -3,6 +3,7 @@
 
 # Changelog
 #
+# 20200620 0.6.2 added version argument
 # 20191218 0.6.1 bugfixes 7, 8
 # 20191218 0.6.0 refactored, embraced global data structures after back and forth
 # 20191216 0.5.1 added fast digest support, cleaned up a little
@@ -38,9 +39,10 @@ BLOCKSIZE = 65536
 SAMPLESIZE = (1 * 1024 * 1024)
 BUFFERING = -1			# 0 for no bufferning, -1 for default
 SEED = (10 * 1024 * 1024)
-SW_VERSION = "0.6.1"
+SW_VERSION = "0.6.2"
+__version__ = SW_VERSION
 CREATED = "20191210"
-UPDATED = "20191218"
+UPDATED = "20200620"
 
 # Global Data Structures
 src_only = {}
@@ -210,6 +212,8 @@ def get_arguments():
 	#	-a, --all		Include hidden files in comparisons
 	#	-r, --recurse	Recurse subdirectories
 	#	-f, --fast		Perform shallow digests (super fast, but less accurate)
+	#	-d, --debug		Debug mode
+	#	-v, --Version	Show the program version number	
 	parser = argparse.ArgumentParser(
 		description='Compare 2 directories using sha1 checksums.')
 	parser.add_argument('srcdir', metavar='srcdir', type=str, 
@@ -226,6 +230,8 @@ def get_arguments():
 		help='Perform shallow digests (super fast, but less accurate)')
 	parser.add_argument('-d', '--debug', action='store_true',
 		help='Debug mode')
+	parser.add_argument('-v', '--version', action='version',
+                    version='%(prog)s {version}'.format(version=__version__))
 	args = vars(parser.parse_args())
 	args['srcdir'] = join(args['srcdir'], '')
 	args['dstdir'] = join(args['dstdir'], '')
