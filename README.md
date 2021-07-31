@@ -2,7 +2,6 @@
 A repository for python scripts of interest
 
 # News
-
 ### 20191218.1639 added signing key, so commits are verified going forward
 ### 20191218.1448 dircmp.py version 0.6.1 ready bugfixes 7 and 8 included
 ### 20191218.1115 dircmp.py version 0.6.0 ready refactored
