@@ -1,9 +1,9 @@
 python dircmp.py tests/default/src tests/default/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/default/src/
@@ -12,7 +12,7 @@ Show all files: False
 Recurse subdirectories: False
 Calculate shallow digests: False
 
-Scanning src ... 9 files found (0.0s).
+Scanning src ... 9 files found (0.05s).
 Calculating sha1 digests in src ..... done (0.0s).
 Scanning dst ... 7 files found (0.0s).
 Calculating sha1 digests in dst ..... done (0.0s).
@@ -57,7 +57,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 14:30:24.601946
+Started at 2020-06-20 09:34:24.707649
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -68,15 +68,15 @@ Started at 2019-12-18 14:30:24.601946
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 14:30:24.607138
+Finished at 2020-06-20 09:34:24.764888
 
-Total running time: 0.01s.
+Total running time: 0.06s.
 python dircmp.py -a tests/default/src tests/default/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/default/src/
@@ -130,7 +130,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 14:30:24.752397
+Started at 2020-06-20 09:34:24.882836
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -141,15 +141,15 @@ Started at 2019-12-18 14:30:24.752397
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 14:30:24.755873
+Finished at 2020-06-20 09:34:24.886497
 
 Total running time: 0.0s.
 python dircmp.py -r tests/default/src tests/default/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/default/src/
@@ -203,7 +203,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 14:30:24.896836
+Started at 2020-06-20 09:34:25.046542
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -214,15 +214,15 @@ Started at 2019-12-18 14:30:24.896836
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 14:30:24.903988
+Finished at 2020-06-20 09:34:25.052452
 
 Total running time: 0.01s.
 python dircmp.py -a -r tests/default/src tests/default/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/default/src/
@@ -276,7 +276,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 14:30:25.048720
+Started at 2020-06-20 09:34:25.209840
 16 files analyzed.
 9 files found in tests/default/src/.
 7 files found in tests/default/dst/.
@@ -287,15 +287,15 @@ Started at 2019-12-18 14:30:25.048720
 1 files only exist in tests/default/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 14:30:25.054068
+Finished at 2020-06-20 09:34:25.214682
 
-Total running time: 0.01s.
+Total running time: 0.0s.
 python dircmp.py tests/hidden/src tests/hidden/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/hidden/src/
@@ -304,8 +304,8 @@ Show all files: False
 Recurse subdirectories: False
 Calculate shallow digests: False
 
-Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ..... done (0.0s).
+Scanning src ... 9 files found (0.04s).
+Calculating sha1 digests in src ..... done (0.02s).
 Scanning dst ... 7 files found (0.0s).
 Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
@@ -349,7 +349,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 14:30:25.200031
+Started at 2020-06-20 09:34:25.371543
 16 files analyzed.
 9 files found in tests/hidden/src/.
 7 files found in tests/hidden/dst/.
@@ -360,15 +360,15 @@ Started at 2019-12-18 14:30:25.200031
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 14:30:25.204237
+Finished at 2020-06-20 09:34:25.428108
 
-Total running time: 0.0s.
+Total running time: 0.06s.
 python dircmp.py -a tests/hidden/src tests/hidden/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/hidden/src/
@@ -427,7 +427,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 
 Summary
 -------
-Started at 2019-12-18 14:30:25.348380
+Started at 2020-06-20 09:34:25.544094
 19 files analyzed.
 10 files found in tests/hidden/src/.
 9 files found in tests/hidden/dst/.
@@ -438,15 +438,15 @@ Started at 2019-12-18 14:30:25.348380
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-18 14:30:25.352169
+Finished at 2020-06-20 09:34:25.547727
 
 Total running time: 0.0s.
 python dircmp.py -r tests/hidden/src tests/hidden/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/hidden/src/
@@ -500,7 +500,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 14:30:25.491529
+Started at 2020-06-20 09:34:25.707136
 16 files analyzed.
 9 files found in tests/hidden/src/.
 7 files found in tests/hidden/dst/.
@@ -511,15 +511,15 @@ Started at 2019-12-18 14:30:25.491529
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 14:30:25.499288
+Finished at 2020-06-20 09:34:25.712269
 
 Total running time: 0.01s.
 python dircmp.py -a -r tests/hidden/src tests/hidden/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/hidden/src/
@@ -578,7 +578,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 
 Summary
 -------
-Started at 2019-12-18 14:30:25.647911
+Started at 2020-06-20 09:34:25.868813
 19 files analyzed.
 10 files found in tests/hidden/src/.
 9 files found in tests/hidden/dst/.
@@ -589,15 +589,15 @@ Started at 2019-12-18 14:30:25.647911
 1 files only exist in tests/hidden/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-18 14:30:25.653468
+Finished at 2020-06-20 09:34:25.874017
 
 Total running time: 0.01s.
 python dircmp.py tests/tree/src tests/tree/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/tree/src/
@@ -606,8 +606,8 @@ Show all files: False
 Recurse subdirectories: False
 Calculate shallow digests: False
 
-Scanning src ... 9 files found (0.0s).
-Calculating sha1 digests in src ..... done (0.0s).
+Scanning src ... 9 files found (0.04s).
+Calculating sha1 digests in src ..... done (0.02s).
 Scanning dst ... 9 files found (0.0s).
 Calculating sha1 digests in dst ..... done (0.0s).
 Analyzing src directory ...done (0.0s).
@@ -651,7 +651,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 14:30:25.774238
+Started at 2020-06-20 09:34:26.027053
 18 files analyzed.
 9 files found in tests/tree/src/.
 9 files found in tests/tree/dst/.
@@ -662,15 +662,15 @@ Started at 2019-12-18 14:30:25.774238
 1 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 14:30:25.779093
+Finished at 2020-06-20 09:34:26.082533
 
-Total running time: 0.0s.
+Total running time: 0.06s.
 python dircmp.py -a tests/tree/src tests/tree/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/tree/src/
@@ -729,7 +729,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-file
 
 Summary
 -------
-Started at 2019-12-18 14:30:25.926416
+Started at 2020-06-20 09:34:26.202273
 22 files analyzed.
 11 files found in tests/tree/src/.
 11 files found in tests/tree/dst/.
@@ -740,15 +740,15 @@ Started at 2019-12-18 14:30:25.926416
 1 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-18 14:30:25.932012
+Finished at 2020-06-20 09:34:26.205900
 
-Total running time: 0.01s.
+Total running time: 0.0s.
 python dircmp.py -r tests/tree/src tests/tree/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/tree/src/
@@ -803,7 +803,7 @@ Different names but same digests: 2 files found.
 
 Summary
 -------
-Started at 2019-12-18 14:30:26.079497
+Started at 2020-06-20 09:34:26.365479
 19 files analyzed.
 9 files found in tests/tree/src/.
 10 files found in tests/tree/dst/.
@@ -814,15 +814,15 @@ Started at 2019-12-18 14:30:26.079497
 2 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 14:30:26.086289
+Finished at 2020-06-20 09:34:26.371266
 
 Total running time: 0.01s.
 python dircmp.py -a -r tests/tree/src tests/tree/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/tree/src/
@@ -887,7 +887,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 nonemptydir/.emptyfile
 
 Summary
 -------
-Started at 2019-12-18 14:30:26.231749
+Started at 2020-06-20 09:34:26.528414
 27 files analyzed.
 14 files found in tests/tree/src/.
 13 files found in tests/tree/dst/.
@@ -898,15 +898,15 @@ Started at 2019-12-18 14:30:26.231749
 2 files only exist in tests/tree/dst/.
 2 files have same names but different digests.
 4 files have different names but same digest.
-Finished at 2019-12-18 14:30:26.238806
+Finished at 2020-06-20 09:34:26.535818
 
 Total running time: 0.01s.
 python dircmp.py tests/bugs/bug-7/src tests/bugs/bug-7/dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.1  |
+| Welcome to dircmp version 0.6.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
+| Last updated 20200620		   |
 +----------------------------------+
 Digest: sha1
 Source (src): tests/bugs/bug-7/src/
@@ -915,7 +915,7 @@ Show all files: False
 Recurse subdirectories: False
 Calculate shallow digests: False
 
-Scanning src ... 2 files found (0.0s).
+Scanning src ... 1 files found (0.0s).
 Calculating sha1 digests in src  done (0.0s).
 Scanning dst ... 1 files found (0.0s).
 Calculating sha1 digests in dst  done (0.0s).
@@ -943,9 +943,9 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 a
 
 Summary
 -------
-Started at 2019-12-18 14:30:26.388328
-3 files analyzed.
-2 files found in tests/bugs/bug-7/src/.
+Started at 2020-06-20 09:34:26.696410
+2 files analyzed.
+1 files found in tests/bugs/bug-7/src/.
 1 files found in tests/bugs/bug-7/dst/.
 0 duplicate files found in tests/bugs/bug-7/src/.
 0 duplicate files found in tests/bugs/bug-7/dst/.
@@ -954,60 +954,8 @@ Started at 2019-12-18 14:30:26.388328
 0 files only exist in tests/bugs/bug-7/dst/.
 0 files have same names but different digests.
 2 files have different names but same digest.
-Finished at 2019-12-18 14:30:26.390272
+Finished at 2020-06-20 09:34:26.698461
 
 Total running time: 0.0s.
 python dircmp.py tests/bugs/bug-8/src tests/bugs/bug-8/dst
-
-+----------------------------------+
-| Welcome to dircmp version 0.6.1  |
-| Created by Will Senn on 20191210 |
-| Last updated 20191218		   |
-+----------------------------------+
-Digest: sha1
-Source (src): tests/bugs/bug-8/src/
-Destination (dst): tests/bugs/bug-8/dst/
-Show all files: False
-Recurse subdirectories: False
-Calculate shallow digests: False
-
-Scanning src ... 2 files found (0.0s).
-Calculating sha1 digests in src  done (0.0s).
-Scanning dst ... 0 files found (0.0s).
-Calculating sha1 digests in dst  done (0.0s).
-Analyzing src directory ...done (0.0s).
-Analyzing dst directory ...done (0.0s).
-Comparing src to dst ...done (0.0s).
-Comparing dst to src ...done (0.0s).
-Checking for different names, same digest ...done (0.0s).
-
-Duplicates found in tests/bugs/bug-8/src/: 0 files found.
-
-Duplicates found in tests/bugs/bug-8/dst/: 0 files found.
-
-Exact matches: 0 files found.
-
-Only in tests/bugs/bug-8/src/: 0 files found.
-
-Only in tests/bugs/bug-8/dst/: 0 files found.
-
-Same names but different digests: 0 files found.
-
-Different names but same digests: 0 files found.
-
-Summary
--------
-Started at 2019-12-18 14:30:26.536308
-2 files analyzed.
-2 files found in tests/bugs/bug-8/src/.
-0 files found in tests/bugs/bug-8/dst/.
-0 duplicate files found in tests/bugs/bug-8/src/.
-0 duplicate files found in tests/bugs/bug-8/dst/.
-0 exact matches found.
-0 files only exist in tests/bugs/bug-8/src/.
-0 files only exist in tests/bugs/bug-8/dst/.
-0 files have same names but different digests.
-0 files have different names but same digest.
-Finished at 2019-12-18 14:30:26.538598
-
-Total running time: 0.0s.
+tests/bugs/bug-8/dst/ is not a directory
