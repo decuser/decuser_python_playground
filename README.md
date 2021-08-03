@@ -121,11 +121,4 @@ python dircmp.py tests/default/src tests/default/dst
 
 * 20210803 "Only in" refers to file content, not filename, so a filename might exist in only one of the trees being compared, but if its contents match a file in the other tree, it will not be listed in "Only in". It will be noted in "Different names but same digests"
 
-'''For example:
-in src, there's a file named only_in_src that contains the letter 'a'
-in dst, there's a file named only_in_dst that contains the letter 'a'
-The comparison would show 0 files Only in src, 0 files Only in dst and
-2 files Different names but same digests. To be clear, the program
-privileges content over names. An enhancement would be to support
-Names only in and Content only in...
-'''
+For example: In src, there's a file named only_in_src that contains the letter 'a'. In dst, there's a file named only_in_dst that contains the letter 'a'. The comparison would show 0 files Only in src, 0 files Only in dst and 2 files Different names but same digests. To be clear, the program privileges content over names. An enhancement would be to support Names only in and Content only in...
