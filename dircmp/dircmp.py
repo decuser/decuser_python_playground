@@ -1,9 +1,22 @@
 #!/usr/bin/env python
 # canonical source located at https://github.com/decuser/decuser_python_playground.git
 
+# quirks
+# 20210803 "Only in" refers to file content, not filename, so a filename
+# might exist in only one of the trees being compared, but if its contents match a
+# file in the other tree, it will not be listed in "Only in". It will be noted in
+# "Different names but same digests"
+# For example:
+# in src, there's a file named only_in_src that contains the letter 'a'
+# in dst, there's a file named only_in_dst that contains the letter 'a'
+# The comparison would show 0 files Only in src, 0 files Only in dst and
+# 2 files Different names but same digests. To be clear, the program
+# privileges content over names. An enhancement would be to support
+# Names only in and Content only in...
+
 # Changelog
 #
-# 20210802 0.6.3 added support for single directory and fixed counting
+# 20210802 0.7.0 added support for single directory and fixed counting
 # 20200620 0.6.2 added version argument
 # 20191218 0.6.1 bugfixes 7, 8
 # 20191218 0.6.0 refactored, embraced global data structures after back and forth
@@ -16,6 +29,7 @@
 # 20191210 0.1 Initial working SW_VERSION
 
 # Wishlist
+# 20210803 support names only in
 # done 20210802 fixed counting
 # done 20210730 added single directory analysis support
 # done 20191216 shallow digest (fast version)
@@ -40,10 +54,10 @@ BLOCKSIZE = 65536
 SAMPLESIZE = (1 * 1024 * 1024)
 BUFFERING = -1  # 0 for no bufferning, -1 for default
 SEED = (10 * 1024 * 1024)
-SW_VERSION = "0.6.2"
+SW_VERSION = "0.7.0"
 __version__ = SW_VERSION
 CREATED = "20191210"
-UPDATED = "20210802"
+UPDATED = "20210803"
 
 # Global Data Structures
 src_only = {}
@@ -226,7 +240,7 @@ def display_welcome():
 	print("\n+----------------------------------+")
 	print(f"| Welcome to dircmp version {SW_VERSION}  |")
 	print(f"| Created by Will Senn on {CREATED} |")
-	print(f"| Last updated {UPDATED}		   |")
+	print(f"| Last updated {UPDATED}	 	   |")
 	print("+----------------------------------+")
 	if not args['brief']:
 		if args['debug']:
@@ -506,6 +520,7 @@ class ElapsedTime:
 # Main program
 
 num_dst_files = 0
+num_dst_dirs = 0
 
 # save the start date time for reporting
 # save the start time for calculating runtime
@@ -594,9 +609,11 @@ if not args['brief']:
 		print()
 
 		print(f"Different names but same digests: {num_diff_name_match_digest} files found.")
-		for f in sorted(diff_name_match_digest):
-			print(f"{f[0]} {f[1]}")
+		for e in sorted(diff_name_match_digest):
+			#print(f"{f[0]} {f[1]}")
 			#print(f"{f[0]} {f[2]}")
+			for f in e[1]:
+				print(f"{e[0]} {f}")
 		print()
 
 # Display Summary
