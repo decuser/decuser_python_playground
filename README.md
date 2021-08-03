@@ -2,6 +2,7 @@
 A repository for python scripts of interest
 
 # News
+### 20210803.0927 added single dir support, fixed all known counting issues
 ### 20191218.1639 added signing key, so commits are verified going forward
 ### 20191218.1448 dircmp.py version 0.6.1 ready bugfixes 7 and 8 included
 ### 20191218.1115 dircmp.py version 0.6.0 ready refactored
@@ -31,7 +32,7 @@ What it does is:
 ## Notes
 I was tired of trying to understand other compare utilities that didn't seem to do quite what I wanted them to. I'm sure this is a bit of a hack, but it seems to work.
 
-The utility isn't optimized, but it's ok for most work. One of these days, I'll have to do some optimization.
+The utility isn't optimized, but it's ok for most work. One of these days, I'll have to do some optimization. That said, it's very accurate. 
 
 ## Test Run
 ```
@@ -115,5 +116,16 @@ python dircmp.py tests/default/src tests/default/dst
 
 * the comparison effectively ignores empty directories - git ignores them too and this 
 	makes git hosted tests problematic for this sorta thing
-* the total files analyzed calculation is imperfect, all other totals are precise. 
-	It's a bug and it's in the issues.
+
+## Quirks
+
+* 20210803 "Only in" refers to file content, not filename, so a filename might exist in only one of the trees being compared, but if its contents match a file in the other tree, it will not be listed in "Only in". It will be noted in "Different names but same digests"
+
+'''For example:
+in src, there's a file named only_in_src that contains the letter 'a'
+in dst, there's a file named only_in_dst that contains the letter 'a'
+The comparison would show 0 files Only in src, 0 files Only in dst and
+2 files Different names but same digests. To be clear, the program
+privileges content over names. An enhancement would be to support
+Names only in and Content only in...
+'''
