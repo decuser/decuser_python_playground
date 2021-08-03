@@ -33,6 +33,7 @@ from collections import defaultdict
 from datetime import datetime
 from os import listdir, walk
 from os.path import isfile, join, isdir, relpath, getsize, split
+from functools import cmp_to_key
 
 # Constants
 BLOCKSIZE = 65536
@@ -82,7 +83,7 @@ def calculate_sha1s(dir_to_parse, display, files):
 
 
 # Compare the files in two dictionaries
-def compare_directories(ldict, rrevidx, rdict, srctxt, dsttxt):
+def compare_directorieso(ldict, rrevidx, rdict, srctxt, dsttxt):
 	only = {}
 	digest_diff = {}
 	if not args['brief']:
@@ -101,6 +102,46 @@ def compare_directories(ldict, rrevidx, rdict, srctxt, dsttxt):
 							digest_diff[ahash] = key
 					else:
 						digest_diff[ahash] = key
+		else:
+			# check if filename is in dst (digest mismatch)
+			skey = re.sub(r'^' + re.escape(args['srcdir']), args['dstdir'], key)
+			if skey in rdict.keys():
+				# a hack to prevent displaying the same record twice
+				found = False
+				for k, lv, rv in match_name_diff_digest:
+					if skey == k:
+						found = True
+						break
+					else:
+						pass
+				if not found:
+					match_name_diff_digest.append([key, ahash, rdict[skey]])
+			else:
+				only[key] = ahash
+
+	return [only, digest_diff]
+
+# Compare the files in two dictionaries
+def compare_directories(ldict, rrevidx, rdict, srctxt, dsttxt):
+	only = {}
+	digest_diff = {}
+	if not args['brief']:
+		print(f"Comparing {srctxt} to {dsttxt} ...", end="")
+	# look for src files in dst
+	for key in ldict.keys():
+		ahash = ldict[key]
+		dst_match_digest = rrevidx.get(ahash)
+		if dst_match_digest is not None:
+			for fil in dst_match_digest:
+				if key == fil:
+					exact_match[key] = ahash
+				else:
+					if ahash not in digest_diff:
+						digest_diff[ahash] = []
+					if f"{srctxt}:{key}" not in digest_diff[ahash]:
+						digest_diff[ahash].append(f"{srctxt}:{key}")
+					if f"{dsttxt}:{fil}" not in digest_diff[ahash]:
+						digest_diff[ahash].append(f"{dsttxt}:{fil}")
 		else:
 			# check if filename is in dst (digest mismatch)
 			skey = re.sub(r'^' + re.escape(args['srcdir']), args['dstdir'], key)
@@ -279,9 +320,20 @@ def get_diff_names_same_digests(ldigests, rdigests):
 	for k, v in ldigests.items():
 		for j, u in rdigests.items():
 			if k == j:
-				digest.append([k, v, u])
+				nlist = unique(v + u)
+				nlist.sort(reverse=True, key=lambda name: (name[0:3]))
+				nlist.sort(key=lambda e: e.split(':')[-1])
+				nlist.sort(reverse=True, key=lambda e: e.split(':')[0])
+				digest.append([k, nlist])
 	return digest
 
+# function to get unique values from a list
+def unique(list1):
+	# insert the list to the set
+	list_set = set(list1)
+	# convert the set to the list
+	unique_list = (list(list_set))
+	return unique_list
 
 # Analyze src directory for files having duplicate contents
 # return dictionary of duplicates
@@ -368,9 +420,8 @@ def recurse_subdir(dir_to_analyze, recurse, all_flag):
 		tfiles[:] = [relpath(path, dir_to_analyze) for path in tfiles]
 		if tfiles[0] == ".":
 			tfiles.pop(0)
-	rfiles = tfiles
+		rfiles = tfiles
 	return [dir_count, file_count, rfiles]
-
 
 # Calculate a sha1 digest from the encoded filesize in bytes,
 # plus the first and last SAMPLESIZE bytes of file
@@ -519,7 +570,12 @@ num_dst_only_files = len(dst_only)
 num_exact_match = len(exact_match)
 num_src_only_duplicates = len(src_only_duplicates)
 num_dst_only_duplicates = len(dst_only_duplicates)
-num_diff_name_match_digest = len(diff_name_match_digest) * 2
+
+num_diff_name_match_digest = 0
+for k, v in diff_name_match_digest:
+	for f in v:
+		num_diff_name_match_digest += 1
+
 num_match_name_diff_digest = len(match_name_diff_digest) * 2
 
 # Print buckets
@@ -540,7 +596,7 @@ if not args['brief']:
 		print(f"Different names but same digests: {num_diff_name_match_digest} files found.")
 		for f in sorted(diff_name_match_digest):
 			print(f"{f[0]} {f[1]}")
-			print(f"{f[0]} {f[2]}")
+			#print(f"{f[0]} {f[2]}")
 		print()
 
 # Display Summary
