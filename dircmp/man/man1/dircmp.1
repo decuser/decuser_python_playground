@@ -1,0 +1,217 @@
+.\" Install this manpage in ~/man/man1
+.\" echo 'export MANPATH="${HOME}/man:$MANPATH"' >> .bash_profile
+.Dd August 3, 2021
+.Dt dircmp 1
+.Os
+.Sh NAME
+.Nm dircmp
+.Nd Compare 2 directories using sha1 checksums
+.Sh SYNOPSIS
+.Nm dircmp
+.Op Fl abdfhrsv
+.Op Fl -all
+.Op Fl -brief
+.Op Fl -debug
+.Op Fl -fast
+.Op Fl -help
+.Op Fl -recurse
+.Op Fl -single
+.Op Fl -version
+.Ar dir1 dir2
+.Sh DESCRIPTION
+The
+.Nm
+utility compares the contents of
+.Ar dir1
+and
+.Ar dir2
+and writes to the standard output a report detailing the differences between the two directories.
+A usage statement and error is printed if no arguments are provided.
+.Pp
+Options:
+.Bl -tag -width Ds
+.It Fl a -all
+Include hidden files and directories in comparisons.
+.It Fl b -brief
+Brief mode - causes
+.Nm
+to suppress file lists.
+.It Fl d -debug
+Debug mode - causes
+.Nm
+to produce verbose output and program debug information.
+.It Fl f -fast
+Fast mode - causes
+.Nm
+to perform shallow digests (super fast, but less accurate).
+.It Fl h -help
+Show a help message and exit.
+.It Fl r -recurse
+Recurse mode - causes
+.Nm
+to recurse subdirectories.
+.It Fl s -single
+Single directory mode - causes
+.Nm
+to analyze a single directory for duplicates.
+.It Fl v -version
+Display
+.Nm
+version number and exit.
+.El
+.Sh EXAMPLE SESSION
+
+Compare two directories recursively.
+.Pp
+.D1 $ dircmp.py -r tests/default/src tests/default/dst
+
+.Bd -literal
++----------------------------------+
+| Welcome to dircmp version 0.7.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210803	 	   |
++----------------------------------+
+Digest: sha1
+Source (src): tests/default/src/
+
+Destination (dst): tests/default/dst/
+Single directory mode: False
+Show all_flag files: False
+Recurse subdirectories: False
+Calculate shallow digests: False
+
+Scanning src ... 9 files found (0.01s).
+Calculating sha1 digests in src ...... done (0.0s).
+Scanning dst ... 7 files found (0.0s).
+Calculating sha1 digests in dst ... done (0.0s).
+Analyzing src directory ...done (0.0s).
+Analyzing dst directory ...done (0.0s).
+Comparing src to dst ...done (0.0s).
+Comparing dst to src ...done (0.0s).
+Checking for different names, same digest ...done (0.0s).
+
+Duplicates found in tests/default/src/: 6 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+
+Duplicates found in tests/default/dst/: 2 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+
+Exact matches: 4 files found.
+75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+
+Only in tests/default/src/: 2 files found.
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+
+Only in tests/default/dst/: 1 files found.
+36969b074153d1e76fbd43fb3d3c59802b5f730d only_in_dst
+
+Same names but different digests: 2 files found.
+in_both_diff_content src:e3bbf99ae9bb23804155b25a82a943e8757fc07a
+in_both_diff_content dst:2690814b054f2ddf3435a30a65506ce4bedba1d2
+
+Different names but same digests: 8 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed src:same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed src:same_in_both_copy
+0026a27ffa78a4a4963175c35fbee11c332049ed dst:same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed dst:same_in_both_copy
+6476df3aac780622368173fe6e768a2edc3932c8 src:in_src_same_content_diff_name
+6476df3aac780622368173fe6e768a2edc3932c8 dst:in_dst_same_content_diff_name
+da39a3ee5e6b4b0d3255bfef95601890afd80709 src:empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 dst:empty_in_both
+
+Summary
+-------
+Started at 2021-08-03 09:38:40.373714
+0 dirs, 16 files analyzed.
+0 dirs, 9 files found in tests/default/src/.
+0 dirs, 7 files found in tests/default/dst/.
+6 duplicate files found in tests/default/src/.
+2 duplicate files found in tests/default/dst/.
+4 exact matches found.
+2 files only exist in tests/default/src/.
+1 files only exist in tests/default/dst/.
+2 files have same names but different digests.
+8 files have different names but same digest.
+Finished at 2021-08-03 09:38:40.392788
+
+Total running time: 0.02s.
+
+.Ed
+
+Compare two directories recursively in brief mode.
+.Pp
+.D1 $ dircmp.py -b -r tests/default/src tests/default/dst
+
+.Bd -literal
++----------------------------------+
+| Welcome to dircmp version 0.7.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210803	 	   |
++----------------------------------+
+...........Started at 2021-08-03 20:40:48.106056
+4 dirs, 18 files analyzed.
+1 dirs, 10 files found in simple-test/src/.
+3 dirs, 8 files found in simple-test/dst/.
+6 duplicate files found in simple-test/src/.
+2 duplicate files found in simple-test/dst/.
+4 exact matches found.
+3 files only exist in simple-test/src/.
+2 files only exist in simple-test/dst/.
+2 files have same names but different digests.
+8 files have different names but same digest.
+Finished at 2021-08-03 20:40:48.128633
+
+.Ed
+
+Analyze a single directory recursively.
+.Pp
+.D1 $ dircmp.py -s -r tests/default/src
+
+.Bd -literal
++----------------------------------+
+| Welcome to dircmp version 0.7.0  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210803	 	   |
++----------------------------------+
+Digest: sha1
+Source (src): simple-test/src/
+Single directory mode: True
+Show all_flag files: False
+Recurse subdirectories: True
+Calculate shallow digests: False
+
+Scanning src ... 10 files found (0.01s).
+Calculating sha1 digests in src ........ done (0.0s).
+Analyzing src directory ...done (0.0s).
+Duplicates found in simple-test/src/: 6 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+
+Summary
+-------
+Started at 2021-08-03 20:42:19.780063
+1 dirs, 10 files analyzed.
+1 dirs, 10 files found in simple-test/src/.
+Finished at 2021-08-03 20:42:19.789974
+
+Total running time: 0.01s.
+
+.Ed
+.Sh SEE ALSO
+.Xr cmp 1 ,
+.Xr diff 1,
+.Xr shasum 1
