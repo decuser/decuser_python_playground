@@ -1,16 +1,23 @@
-python dircmp.py src dst
+Last login: Wed Aug  4 07:41:17 on ttys000
+cd /Users/wsenn/PycharmProjects/dircmp;echo -ne "\033]2;/Users/wsenn/PycharmProjects/dircmp\007"
+terra:~ wsenn$ cd /Users/wsenn/PycharmProjects/dircmp;echo -ne "\033]2;/Users/wsenn/PycharmProjects/dircmp\007"
+terra:dircmp wsenn$ cd simple-test/
+terra:simple-test wsenn$ ls
+dst		src		test-brief.sh	test.sh
+terra:simple-test wsenn$ ./test.sh 
+python ../dircmp.py src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
 Digest: sha1
 Source (src): src/
 
 Destination (dst): dst/
 Single directory mode: False
-Show all_flag files: False
+Show all files: False
 Recurse subdirectories: False
 Calculate shallow digests: False
 
@@ -65,8 +72,8 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 dst:empty_in_both
 
 Summary
 -------
-Started at 2021-08-03 08:13:13.537247
-2 dirs, 16 files analyzed.
+Started at 2021-08-04 07:46:11.500144
+4 dirs, 16 files analyzed including src/ and dst/.
 0 dirs, 9 files found in src/.
 2 dirs, 7 files found in dst/.
 6 duplicate files found in src/.
@@ -76,18 +83,18 @@ Started at 2021-08-03 08:13:13.537247
 1 files only exist in dst/.
 2 files have same names but different digests.
 8 files have different names but same digest.
-Finished at 2021-08-03 08:13:13.548474
+Finished at 2021-08-04 07:46:11.514450
 
 Total running time: 0.01s.
-python dircmp.py -b src dst
+python ../dircmp.py -b src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
-.........Started at 2021-08-03 08:13:13.601244
-2 dirs, 16 files analyzed.
+.........Started at 2021-08-04 07:46:11.564038
+4 dirs, 16 files analyzed including src/ and dst/.
 0 dirs, 9 files found in src/.
 2 dirs, 7 files found in dst/.
 6 duplicate files found in src/.
@@ -97,16 +104,16 @@ python dircmp.py -b src dst
 1 files only exist in dst/.
 2 files have same names but different digests.
 8 files have different names but same digest.
-Finished at 2021-08-03 08:13:13.611192
-python dircmp.py -b -a src dst
+Finished at 2021-08-04 07:46:11.573541
+python ../dircmp.py -b -a src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
-........Started at 2021-08-03 08:13:13.661021
-3 dirs, 19 files analyzed.
+........Started at 2021-08-04 07:46:11.626666
+5 dirs, 19 files analyzed including src/ and dst/.
 1 dirs, 10 files found in src/.
 2 dirs, 9 files found in dst/.
 6 duplicate files found in src/.
@@ -116,35 +123,35 @@ python dircmp.py -b -a src dst
 1 files only exist in dst/.
 2 files have same names but different digests.
 10 files have different names but same digest.
-Finished at 2021-08-03 08:13:13.670312
-python dircmp.py -b -r src dst
+Finished at 2021-08-04 07:46:11.636363
+python ../dircmp.py -b -r src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
-...........Started at 2021-08-03 08:13:13.729272
-2 dirs, 18 files analyzed.
-0 dirs, 10 files found in src/.
+.........Started at 2021-08-04 07:46:11.689792
+4 dirs, 17 files analyzed including src/ and dst/.
+0 dirs, 9 files found in src/.
 2 dirs, 8 files found in dst/.
 6 duplicate files found in src/.
 2 duplicate files found in dst/.
 4 exact matches found.
-3 files only exist in src/.
+2 files only exist in src/.
 2 files only exist in dst/.
 2 files have same names but different digests.
 8 files have different names but same digest.
-Finished at 2021-08-03 08:13:13.740244
-python dircmp.py -b -f src dst
+Finished at 2021-08-04 07:46:11.702852
+python ../dircmp.py -b -f src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
-.........Started at 2021-08-03 08:13:13.795683
-2 dirs, 16 files analyzed.
+.........Started at 2021-08-04 07:46:11.752859
+4 dirs, 16 files analyzed including src/ and dst/.
 0 dirs, 9 files found in src/.
 2 dirs, 7 files found in dst/.
 6 duplicate files found in src/.
@@ -154,16 +161,16 @@ python dircmp.py -b -f src dst
 1 files only exist in dst/.
 2 files have same names but different digests.
 8 files have different names but same digest.
-Finished at 2021-08-03 08:13:13.809826
-python dircmp.py -b -a -r src dst
+Finished at 2021-08-04 07:46:11.763527
+python ../dircmp.py -b -a -r src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
-............Started at 2021-08-03 08:13:13.874056
-3 dirs, 24 files analyzed.
+............Started at 2021-08-04 07:46:11.817633
+5 dirs, 24 files analyzed including src/ and dst/.
 1 dirs, 13 files found in src/.
 2 dirs, 11 files found in dst/.
 9 duplicate files found in src/.
@@ -173,16 +180,16 @@ python dircmp.py -b -a -r src dst
 2 files only exist in dst/.
 2 files have same names but different digests.
 14 files have different names but same digest.
-Finished at 2021-08-03 08:13:13.887709
-python dircmp.py -b -a -f src dst
+Finished at 2021-08-04 07:46:11.830095
+python ../dircmp.py -b -a -f src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
-........Started at 2021-08-03 08:13:13.940670
-3 dirs, 19 files analyzed.
+........Started at 2021-08-04 07:46:11.883558
+5 dirs, 19 files analyzed including src/ and dst/.
 1 dirs, 10 files found in src/.
 2 dirs, 9 files found in dst/.
 6 duplicate files found in src/.
@@ -192,35 +199,35 @@ python dircmp.py -b -a -f src dst
 1 files only exist in dst/.
 2 files have same names but different digests.
 10 files have different names but same digest.
-Finished at 2021-08-03 08:13:13.950087
-python dircmp.py -b -r -f src dst
+Finished at 2021-08-04 07:46:11.893665
+python ../dircmp.py -b -r -f src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
-...........Started at 2021-08-03 08:13:14.000793
-2 dirs, 18 files analyzed.
-0 dirs, 10 files found in src/.
+.........Started at 2021-08-04 07:46:11.943874
+4 dirs, 17 files analyzed including src/ and dst/.
+0 dirs, 9 files found in src/.
 2 dirs, 8 files found in dst/.
 6 duplicate files found in src/.
 2 duplicate files found in dst/.
 4 exact matches found.
-3 files only exist in src/.
+2 files only exist in src/.
 2 files only exist in dst/.
 2 files have same names but different digests.
 8 files have different names but same digest.
-Finished at 2021-08-03 08:13:14.011872
-python dircmp.py -b -a -r -f src dst
+Finished at 2021-08-04 07:46:11.955921
+python ../dircmp.py -b -a -r -f src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
-............Started at 2021-08-03 08:13:14.059772
-3 dirs, 24 files analyzed.
+............Started at 2021-08-04 07:46:12.007550
+5 dirs, 24 files analyzed including src/ and dst/.
 1 dirs, 13 files found in src/.
 2 dirs, 11 files found in dst/.
 9 duplicate files found in src/.
@@ -230,20 +237,20 @@ python dircmp.py -b -a -r -f src dst
 2 files only exist in dst/.
 2 files have same names but different digests.
 14 files have different names but same digest.
-Finished at 2021-08-03 08:13:14.073982
-python dircmp.py -a src dst
+Finished at 2021-08-04 07:46:12.020409
+python ../dircmp.py -a src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
 Digest: sha1
 Source (src): src/
 
 Destination (dst): dst/
 Single directory mode: False
-Show all_flag files: True
+Show all files: True
 Recurse subdirectories: False
 Calculate shallow digests: False
 
@@ -303,8 +310,8 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 dst:empty_in_both
 
 Summary
 -------
-Started at 2021-08-03 08:13:14.126244
-3 dirs, 19 files analyzed.
+Started at 2021-08-04 07:46:12.073512
+5 dirs, 19 files analyzed including src/ and dst/.
 1 dirs, 10 files found in src/.
 2 dirs, 9 files found in dst/.
 6 duplicate files found in src/.
@@ -314,22 +321,22 @@ Started at 2021-08-03 08:13:14.126244
 1 files only exist in dst/.
 2 files have same names but different digests.
 10 files have different names but same digest.
-Finished at 2021-08-03 08:13:14.137516
+Finished at 2021-08-04 07:46:12.083558
 
 Total running time: 0.01s.
-python dircmp.py -a -r src dst
+python ../dircmp.py -a -r src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
 Digest: sha1
 Source (src): src/
 
 Destination (dst): dst/
 Single directory mode: False
-Show all_flag files: True
+Show all files: True
 Recurse subdirectories: True
 Calculate shallow digests: False
 
@@ -399,8 +406,8 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 dst:nonemptydir/.emptyfile
 
 Summary
 -------
-Started at 2021-08-03 08:13:14.185904
-3 dirs, 24 files analyzed.
+Started at 2021-08-04 07:46:12.138986
+5 dirs, 24 files analyzed including src/ and dst/.
 1 dirs, 13 files found in src/.
 2 dirs, 11 files found in dst/.
 9 duplicate files found in src/.
@@ -410,22 +417,22 @@ Started at 2021-08-03 08:13:14.185904
 2 files only exist in dst/.
 2 files have same names but different digests.
 14 files have different names but same digest.
-Finished at 2021-08-03 08:13:14.197834
+Finished at 2021-08-04 07:46:12.153754
 
 Total running time: 0.01s.
-python dircmp.py -a -f src dst
+python ../dircmp.py -a -f src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
 Digest: sha1
 Source (src): src/
 
 Destination (dst): dst/
 Single directory mode: False
-Show all_flag files: True
+Show all files: True
 Recurse subdirectories: False
 Calculate shallow digests: True
 
@@ -485,8 +492,8 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 dst:empty_in_both
 
 Summary
 -------
-Started at 2021-08-03 08:13:14.251965
-3 dirs, 19 files analyzed.
+Started at 2021-08-04 07:46:12.202497
+5 dirs, 19 files analyzed including src/ and dst/.
 1 dirs, 10 files found in src/.
 2 dirs, 9 files found in dst/.
 6 duplicate files found in src/.
@@ -496,27 +503,27 @@ Started at 2021-08-03 08:13:14.251965
 1 files only exist in dst/.
 2 files have same names but different digests.
 10 files have different names but same digest.
-Finished at 2021-08-03 08:13:14.263244
+Finished at 2021-08-04 07:46:12.215541
 
 Total running time: 0.01s.
-python dircmp.py -r -f src dst
+python ../dircmp.py -r -f src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
 Digest: sha1
 Source (src): src/
 
 Destination (dst): dst/
 Single directory mode: False
-Show all_flag files: False
+Show all files: False
 Recurse subdirectories: True
 Calculate shallow digests: True
 
-Scanning src ... 10 files found (0.01s).
-Calculating sha1 digests in src ........ done (0.0s).
+Scanning src ... 9 files found (0.01s).
+Calculating sha1 digests in src ...... done (0.0s).
 Scanning dst ... 8 files found (0.0s).
 Calculating sha1 digests in dst ... done (0.0s).
 Analyzing src directory ...done (0.0s).
@@ -543,8 +550,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
-Only in src/: 3 files found.
-cdfde09f59ba7644de7e7c7d6fd6c7050e0069c9 .hidden-dir/a file in the hidden dir with spaces
+Only in src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 
@@ -568,38 +574,38 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 dst:empty_in_both
 
 Summary
 -------
-Started at 2021-08-03 08:13:14.314057
-2 dirs, 18 files analyzed.
-0 dirs, 10 files found in src/.
+Started at 2021-08-04 07:46:12.266135
+4 dirs, 17 files analyzed including src/ and dst/.
+0 dirs, 9 files found in src/.
 2 dirs, 8 files found in dst/.
 6 duplicate files found in src/.
 2 duplicate files found in dst/.
 4 exact matches found.
-3 files only exist in src/.
+2 files only exist in src/.
 2 files only exist in dst/.
 2 files have same names but different digests.
 8 files have different names but same digest.
-Finished at 2021-08-03 08:13:14.325065
+Finished at 2021-08-04 07:46:12.277674
 
 Total running time: 0.01s.
-python dircmp.py -r src dst
+python ../dircmp.py -r src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
 Digest: sha1
 Source (src): src/
 
 Destination (dst): dst/
 Single directory mode: False
-Show all_flag files: False
+Show all files: False
 Recurse subdirectories: True
 Calculate shallow digests: False
 
-Scanning src ... 10 files found (0.01s).
-Calculating sha1 digests in src ........ done (0.0s).
+Scanning src ... 9 files found (0.01s).
+Calculating sha1 digests in src ...... done (0.0s).
 Scanning dst ... 8 files found (0.0s).
 Calculating sha1 digests in dst ... done (0.0s).
 Analyzing src directory ...done (0.0s).
@@ -626,8 +632,7 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
 
-Only in src/: 3 files found.
-cdfde09f59ba7644de7e7c7d6fd6c7050e0069c9 .hidden-dir/a file in the hidden dir with spaces
+Only in src/: 2 files found.
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
 c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
 
@@ -651,33 +656,33 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 dst:empty_in_both
 
 Summary
 -------
-Started at 2021-08-03 08:13:14.378638
-2 dirs, 18 files analyzed.
-0 dirs, 10 files found in src/.
+Started at 2021-08-04 07:46:12.330531
+4 dirs, 17 files analyzed including src/ and dst/.
+0 dirs, 9 files found in src/.
 2 dirs, 8 files found in dst/.
 6 duplicate files found in src/.
 2 duplicate files found in dst/.
 4 exact matches found.
-3 files only exist in src/.
+2 files only exist in src/.
 2 files only exist in dst/.
 2 files have same names but different digests.
 8 files have different names but same digest.
-Finished at 2021-08-03 08:13:14.389456
+Finished at 2021-08-04 07:46:12.342747
 
 Total running time: 0.01s.
-python dircmp.py -f src dst
+python ../dircmp.py -f src dst
 
 +----------------------------------+
-| Welcome to dircmp version 0.6.2  |
+| Welcome to dircmp version 0.7.2  |
 | Created by Will Senn on 20191210 |
-| Last updated 20210802		   |
+| Last updated 20210804	 	   |
 +----------------------------------+
 Digest: sha1
 Source (src): src/
 
 Destination (dst): dst/
 Single directory mode: False
-Show all_flag files: False
+Show all files: False
 Recurse subdirectories: False
 Calculate shallow digests: True
 
@@ -732,8 +737,8 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 dst:empty_in_both
 
 Summary
 -------
-Started at 2021-08-03 08:13:14.447670
-2 dirs, 16 files analyzed.
+Started at 2021-08-04 07:46:12.391842
+4 dirs, 16 files analyzed including src/ and dst/.
 0 dirs, 9 files found in src/.
 2 dirs, 7 files found in dst/.
 6 duplicate files found in src/.
@@ -743,6 +748,7 @@ Started at 2021-08-03 08:13:14.447670
 1 files only exist in dst/.
 2 files have same names but different digests.
 8 files have different names but same digest.
-Finished at 2021-08-03 08:13:14.457586
+Finished at 2021-08-04 07:46:12.404561
 
 Total running time: 0.01s.
+terra:simple-test wsenn$ 

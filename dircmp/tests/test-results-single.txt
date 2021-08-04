@@ -1,0 +1,339 @@
+terra:simple-test wsenn$ ./test-single.sh 
+python ../dircmp.py -s src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+Digest: sha1
+Source (src): src/
+Single directory mode: True
+Show all files: False
+Recurse subdirectories: False
+Calculate shallow digests: False
+
+Scanning src ... 9 files found (0.01s).
+Calculating sha1 digests in src ...... done (0.0s).
+Analyzing src directory ...done (0.0s).
+Duplicates found in src/: 6 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+
+Summary
+-------
+Started at 2021-08-04 07:49:30.000286
+1 dirs, 9 files analyzed including src/.
+0 dirs, 9 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.014439
+
+Total running time: 0.01s.
+python ../dircmp.py -s -b src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+......Started at 2021-08-04 07:49:30.065722
+1 dirs, 9 files analyzed including src/.
+0 dirs, 9 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.074272
+python ../dircmp.py -s -b -a src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+...Started at 2021-08-04 07:49:30.129672
+2 dirs, 10 files analyzed including src/.
+1 dirs, 10 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.138779
+python ../dircmp.py -s -b -r src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+......Started at 2021-08-04 07:49:30.195255
+1 dirs, 9 files analyzed including src/.
+0 dirs, 9 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.537740
+python ../dircmp.py -s -b -f src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+......Started at 2021-08-04 07:49:30.593634
+1 dirs, 9 files analyzed including src/.
+0 dirs, 9 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.602428
+python ../dircmp.py -s -b -a -r src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+.....Started at 2021-08-04 07:49:30.652443
+2 dirs, 13 files analyzed including src/.
+1 dirs, 13 files found in src/.
+9 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.665021
+python ../dircmp.py -s -b -a -f src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+...Started at 2021-08-04 07:49:30.718624
+2 dirs, 10 files analyzed including src/.
+1 dirs, 10 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.730459
+python ../dircmp.py -s -b -r -f src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+......Started at 2021-08-04 07:49:30.783717
+1 dirs, 9 files analyzed including src/.
+0 dirs, 9 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.796224
+python ../dircmp.py -s -b -a -r -f src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+.....Started at 2021-08-04 07:49:30.855176
+2 dirs, 13 files analyzed including src/.
+1 dirs, 13 files found in src/.
+9 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.867206
+python ../dircmp.py -s -a src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+Digest: sha1
+Source (src): src/
+Single directory mode: True
+Show all files: True
+Recurse subdirectories: False
+Calculate shallow digests: False
+
+Scanning src ... 10 files found (0.01s).
+Calculating sha1 digests in src ... done (0.0s).
+Analyzing src directory ...done (0.0s).
+Duplicates found in src/: 6 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+
+Summary
+-------
+Started at 2021-08-04 07:49:30.920848
+2 dirs, 10 files analyzed including src/.
+1 dirs, 10 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.931840
+
+Total running time: 0.01s.
+python ../dircmp.py -s -a -r src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+Digest: sha1
+Source (src): src/
+Single directory mode: True
+Show all files: True
+Recurse subdirectories: True
+Calculate shallow digests: False
+
+Scanning src ... 13 files found (0.01s).
+Calculating sha1 digests in src ..... done (0.0s).
+Analyzing src directory ...done (0.0s).
+Duplicates found in src/: 9 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+34391ab0ad55fc972022054524af6bd9982e5f4b .hidden-dir/.hidden-non-empty-file
+34391ab0ad55fc972022054524af6bd9982e5f4b .hidden_in_both
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+da39a3ee5e6b4b0d3255bfef95601890afd80709 .hidden-dir/.hidden-empty-file
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+
+Summary
+-------
+Started at 2021-08-04 07:49:30.983104
+2 dirs, 13 files analyzed including src/.
+1 dirs, 13 files found in src/.
+9 duplicate files found in src/.
+Finished at 2021-08-04 07:49:30.995866
+
+Total running time: 0.01s.
+python ../dircmp.py -s -a -f src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+Digest: sha1
+Source (src): src/
+Single directory mode: True
+Show all files: True
+Recurse subdirectories: False
+Calculate shallow digests: True
+
+Scanning src ... 10 files found (0.01s).
+Calculating sha1 digests in src ... done (0.0s).
+Analyzing src directory ...done (0.0s).
+Duplicates found in src/: 6 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+
+Summary
+-------
+Started at 2021-08-04 07:49:31.048962
+2 dirs, 10 files analyzed including src/.
+1 dirs, 10 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:31.058858
+
+Total running time: 0.01s.
+python ../dircmp.py -s -r -f src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+Digest: sha1
+Source (src): src/
+Single directory mode: True
+Show all files: False
+Recurse subdirectories: True
+Calculate shallow digests: True
+
+Scanning src ... 9 files found (0.01s).
+Calculating sha1 digests in src ...... done (0.0s).
+Analyzing src directory ...done (0.0s).
+Duplicates found in src/: 6 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+
+Summary
+-------
+Started at 2021-08-04 07:49:31.109387
+1 dirs, 9 files analyzed including src/.
+0 dirs, 9 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:31.119047
+
+Total running time: 0.01s.
+python ../dircmp.py -s -r src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+Digest: sha1
+Source (src): src/
+Single directory mode: True
+Show all files: False
+Recurse subdirectories: True
+Calculate shallow digests: False
+
+Scanning src ... 9 files found (0.01s).
+Calculating sha1 digests in src ...... done (0.0s).
+Analyzing src directory ...done (0.0s).
+Duplicates found in src/: 6 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+
+Summary
+-------
+Started at 2021-08-04 07:49:31.174385
+1 dirs, 9 files analyzed including src/.
+0 dirs, 9 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:31.183589
+
+Total running time: 0.01s.
+python ../dircmp.py -s -f src
+
++----------------------------------+
+| Welcome to dircmp version 0.7.2  |
+| Created by Will Senn on 20191210 |
+| Last updated 20210804	 	   |
++----------------------------------+
+Digest: sha1
+Source (src): src/
+Single directory mode: True
+Show all files: False
+Recurse subdirectories: False
+Calculate shallow digests: True
+
+Scanning src ... 9 files found (0.01s).
+Calculating sha1 digests in src ...... done (0.0s).
+Analyzing src directory ...done (0.0s).
+Duplicates found in src/: 6 files found.
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+
+Summary
+-------
+Started at 2021-08-04 07:49:31.239069
+1 dirs, 9 files analyzed including src/.
+0 dirs, 9 files found in src/.
+6 duplicate files found in src/.
+Finished at 2021-08-04 07:49:31.250081
+
+Total running time: 0.01s.
+terra:simple-test wsenn$ 

@@ -16,6 +16,7 @@
 
 # Changelog
 #
+# 20210804 0.7.2 bugfix unlisted - issue with directories added to filelist
 # 20210804 0.7.1 bugfix 14 -b -s not working
 # 20210802 0.7.0 added support for single directory and fixed counting
 # 20200620 0.6.2 added version argument
@@ -55,7 +56,7 @@ BLOCKSIZE = 65536
 SAMPLESIZE = (1 * 1024 * 1024)
 BUFFERING = -1  # 0 for no bufferning, -1 for default
 SEED = (10 * 1024 * 1024)
-SW_VERSION = "0.7.1"
+SW_VERSION = "0.7.2"
 __version__ = SW_VERSION
 CREATED = "20191210"
 UPDATED = "20210804"
@@ -330,7 +331,7 @@ def get_files(dir_to_analyze, displayname):
 
 # Create a list of dirs and files from a root
 def recurse_subdir(dir_to_analyze, recurse, all_flag):
-	dir_count = 1
+	dir_count = 0
 	file_count = 0
 	tfiles = []
 	rfiles = []
@@ -340,7 +341,6 @@ def recurse_subdir(dir_to_analyze, recurse, all_flag):
 			if isdir(join(dir_to_analyze, file)):
 				if all_flag or not file.startswith('.'):
 					dir_count += 1
-					rfiles.append(file)
 			if isfile(join(dir_to_analyze, file)):
 				if all_flag or not file.startswith('.'):
 					file_count += 1
@@ -348,17 +348,17 @@ def recurse_subdir(dir_to_analyze, recurse, all_flag):
 	else:
 		for root, dirs, files in walk(dir_to_analyze):
 			[head, tail] = split(root)
-			if args['all'] or not root.startswith('.'):
+			if all_flag or not (root.startswith('.') or tail.startswith('.')):
 				tfiles.append(root)
 				for file in files:
-					if args['all'] or not file.startswith('.'):
+					if all_flag or not file.startswith('.'):
 						file_count += 1
 						tfiles.append(join(root, file))
 				for dir in dirs:
-					if args['all'] or not dir.startswith('.'):
+					if all_flag or not dir.startswith('.'):
 						dir_count += 1
-						tfiles.append(join(dir_to_analyze, dir))
-		tfiles[:] = [relpath(path, dir_to_analyze) for path in tfiles]
+		for idx in range(0, len(tfiles)):
+			tfiles[idx] = relpath(tfiles[idx], dir_to_analyze)
 		if tfiles[0] == ".":
 			tfiles.pop(0)
 		rfiles = tfiles
@@ -545,7 +545,10 @@ if not args['brief']:
 print(f"Started at {start_date}")
 totalfiles = num_src_files + num_dst_files
 totaldirs = num_src_dirs + num_dst_dirs
-print(f"{totaldirs} dirs, {totalfiles} files analyzed.")
+if args['single']:
+	print(f"{totaldirs + 1} dirs, {totalfiles} files analyzed including {args['srcdir']}.")
+else:
+	print(f"{totaldirs + 2} dirs, {totalfiles} files analyzed including {args['srcdir']} and {args['dstdir']}.")
 print(f"{num_src_dirs} dirs, {num_src_files} files found in {args['srcdir']}.")
 if not args['single']:
 	print(f"{num_dst_dirs} dirs, {num_dst_files} files found in {args['dstdir']}.")
