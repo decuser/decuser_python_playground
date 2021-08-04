@@ -16,9 +16,10 @@
 
 # Changelog
 #
+# 20210804 0.7.1 bugfix 14 -b -s not working
 # 20210802 0.7.0 added support for single directory and fixed counting
 # 20200620 0.6.2 added version argument
-# 20191218 0.6.1 bugfixes 7, 8
+# 20191218 0.6.1 bugfixes 7 empty source dir div/zero, 8 hidden files included erroneously
 # 20191218 0.6.0 refactored, embraced global data structures after back and forth
 # 20191216 0.5.1 added fast digest support, cleaned up a little
 # 20191212 0.5.0 added recursion and hidden file support, changed version scheme
@@ -54,10 +55,10 @@ BLOCKSIZE = 65536
 SAMPLESIZE = (1 * 1024 * 1024)
 BUFFERING = -1  # 0 for no bufferning, -1 for default
 SEED = (10 * 1024 * 1024)
-SW_VERSION = "0.7.0"
+SW_VERSION = "0.7.1"
 __version__ = SW_VERSION
 CREATED = "20191210"
-UPDATED = "20210803"
+UPDATED = "20210804"
 
 # Global Data Structures
 src_only = {}
@@ -206,7 +207,7 @@ def display_welcome():
 		if not args['single']:
 			print(f"\nDestination (dst): {args['dstdir']}")
 		print(f"Single directory mode: {args['single']}")
-		print(f"Show all_flag files: {args['all_flag']}")
+		print(f"Show all files: {args['all']}")
 		print(f"Recurse subdirectories: {args['recurse']}")
 		print(f"Calculate shallow digests: {args['fast']}\n")
 
@@ -233,7 +234,7 @@ def get_arguments():
 	#
 	# regular arguments:
 	#	-b, --brief		Brief mode - suppress file lists
-	#	-a, --all_flag		Include hidden files in comparisons
+	#	-a, --all		Include hidden files in comparisons
 	#	-r, --recurse	Recurse subdirectories
 	#	-f, --fast		Perform shallow digests (super fast, but less accurate)
 	#	-d, --debug		Debug mode
@@ -247,7 +248,7 @@ def get_arguments():
 						help='a destination directory')
 	parser.add_argument('-b', '--brief', action='store_true',
 						help='Brief mode - suppress file lists')
-	parser.add_argument('-a', '--all_flag', action='store_true',
+	parser.add_argument('-a', '--all', action='store_true',
 						help='Include hidden files in comparisons')
 	parser.add_argument('-r', '--recurse', action='store_true',
 						help='Recurse subdirectories')
@@ -323,7 +324,7 @@ def get_duplicates(dict_to_analyze, revidx, display):
 def get_files(dir_to_analyze, displayname):
 	if not args['brief']:
 		print(f"Scanning {displayname} ...", end="")
-	[num_dirs, num_files, files] = recurse_subdir(dir_to_analyze, args['recurse'], args['all_flag'])
+	[num_dirs, num_files, files] = recurse_subdir(dir_to_analyze, args['recurse'], args['all'])
 	files_bytes = total_files(dir_to_analyze, files)
 	return [files, files_bytes, num_dirs, num_files]
 
@@ -337,24 +338,24 @@ def recurse_subdir(dir_to_analyze, recurse, all_flag):
 		tfiles = listdir(dir_to_analyze)
 		for file in tfiles:
 			if isdir(join(dir_to_analyze, file)):
-				if args['all_flag'] or not file.startswith('.'):
+				if all_flag or not file.startswith('.'):
 					dir_count += 1
 					rfiles.append(file)
 			if isfile(join(dir_to_analyze, file)):
-				if args['all_flag'] or not file.startswith('.'):
+				if all_flag or not file.startswith('.'):
 					file_count += 1
 					rfiles.append(file)
 	else:
 		for root, dirs, files in walk(dir_to_analyze):
 			[head, tail] = split(root)
-			if args['all_flag'] or not root.startswith('.'):
+			if args['all'] or not root.startswith('.'):
 				tfiles.append(root)
 				for file in files:
-					if args['all_flag'] or not file.startswith('.'):
+					if args['all'] or not file.startswith('.'):
 						file_count += 1
 						tfiles.append(join(root, file))
 				for dir in dirs:
-					if args['all_flag'] or not dir.startswith('.'):
+					if args['all'] or not dir.startswith('.'):
 						dir_count += 1
 						tfiles.append(join(dir_to_analyze, dir))
 		tfiles[:] = [relpath(path, dir_to_analyze) for path in tfiles]
@@ -477,11 +478,11 @@ if not args['single']:
 	[dst_files_dict, revidx_dst_files] = calculate_sha1s(args['dstdir'], "dst", dst_files)
 	timer.display(f" done ", ".\n")
 
-	# get all_flag duplicates in src
+	# get all duplicates in src
 	src_only_duplicates = get_duplicates(src_files_dict, revidx_src_files, "src")
 	timer.display(f"done ", ".\n")
 
-	# get all_flag duplicates in dst
+	# get all duplicates in dst
 	dst_only_duplicates = get_duplicates(dst_files_dict, revidx_dst_files, "dst")
 	timer.display(f"done ", ".\n")
 
@@ -555,6 +556,8 @@ if not args['single']:
 	print(f"{num_dst_only_files} files only exist in {args['dstdir']}.")
 	print(f"{num_match_name_diff_digest} files have same names but different digests.")
 	print(f"{num_diff_name_match_digest} files have different names but same digest.")
+else:
+	print(f"{num_src_only_duplicates} duplicate files found in {args['srcdir']}.")
 
 final = time.time()
 
