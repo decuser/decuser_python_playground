@@ -2,7 +2,8 @@
 A repository for python scripts of interest
 
 # News
-### 20210803.0927 added single dir support, fixed all known counting issues
+### 20210804.0617 dircmp.py version 0.7.1 ready bugfix 14 included
+### 20210803.0927 dircmp.py version 0.7.0 ready added single dir support, fixed all known counting issues
 ### 20191218.1639 added signing key, so commits are verified going forward
 ### 20191218.1448 dircmp.py version 0.6.1 ready bugfixes 7 and 8 included
 ### 20191218.1115 dircmp.py version 0.6.0 ready refactored
