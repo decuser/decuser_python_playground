@@ -95,46 +95,6 @@ def calculate_sha1s(dir_to_parse, display, files):
 
 	return [files_dict, revidx]
 
-
-# Compare the files in two dictionaries
-def compare_directorieso(ldict, rrevidx, rdict, srctxt, dsttxt):
-	only = {}
-	digest_diff = {}
-	if not args['brief']:
-		print(f"Comparing {srctxt} to {dsttxt} ...", end="")
-	# look for src files in dst
-	for key in ldict.keys():
-		ahash = ldict[key]
-		dst_match_digest = rrevidx.get(ahash)
-		if dst_match_digest is not None:
-			for fil in dst_match_digest:
-				if key == fil:
-					exact_match[key] = ahash
-				else:
-					if fil in ldict.keys():
-						if ahash != ldict[fil]:
-							digest_diff[ahash] = key
-					else:
-						digest_diff[ahash] = key
-		else:
-			# check if filename is in dst (digest mismatch)
-			skey = re.sub(r'^' + re.escape(args['srcdir']), args['dstdir'], key)
-			if skey in rdict.keys():
-				# a hack to prevent displaying the same record twice
-				found = False
-				for k, lv, rv in match_name_diff_digest:
-					if skey == k:
-						found = True
-						break
-					else:
-						pass
-				if not found:
-					match_name_diff_digest.append([key, ahash, rdict[skey]])
-			else:
-				only[key] = ahash
-
-	return [only, digest_diff]
-
 # Compare the files in two dictionaries
 def compare_directories(ldict, rrevidx, rdict, srctxt, dsttxt):
 	only = {}
@@ -175,7 +135,6 @@ def compare_directories(ldict, rrevidx, rdict, srctxt, dsttxt):
 
 	return [only, digest_diff]
 
-
 # Display a dictionary in specified order, default is key, value
 def display_dictionary(dict_to_display, display, num, sortorder="kv", displayorder="kv"):
 	if not args['brief']:
@@ -194,7 +153,6 @@ def display_dictionary(dict_to_display, display, num, sortorder="kv", displayord
 			else:
 				print(f"{v} {k}")
 		print()
-
 
 # Display duplicates in a directory, given a dictionary of duplicates
 def display_duplicates(duplicates, dir_to_display):
@@ -220,7 +178,6 @@ def display_duplicates(duplicates, dir_to_display):
 					print(f"{v} {f}")
 		print()
 
-
 # Display dots when doing long running tasks (needs improvements)
 def display_progress(curr, total, inc):
 	if args['debug']:
@@ -233,7 +190,6 @@ def display_progress(curr, total, inc):
 		if curr % (100 / inc):
 			print(".", end="")
 			sys.stdout.flush()
-
 
 # Display welcome banner
 def display_welcome():
@@ -254,7 +210,6 @@ def display_welcome():
 		print(f"Recurse subdirectories: {args['recurse']}")
 		print(f"Calculate shallow digests: {args['fast']}\n")
 
-
 # Caculate a sha1 digest from file entire contents of file
 # this is the default method
 # returns the calculated hex encoded digest
@@ -268,7 +223,6 @@ def full_digest(file_to_digest):
 	digest = hasher.hexdigest()
 	afile.close()
 	return digest
-
 
 # Get arguments from the command line
 # returns arguments in a dictionary
@@ -325,7 +279,6 @@ def get_arguments():
 
 	return args
 
-
 # Reconcile differences
 def get_diff_names_same_digests(ldigests, rdigests):
 	if not args['brief']:
@@ -366,7 +319,6 @@ def get_duplicates(dict_to_analyze, revidx, display):
 					duplicates[key] = ahash
 	return duplicates
 
-
 # Read the source files into src_files list and count them
 def get_files(dir_to_analyze, displayname):
 	if not args['brief']:
@@ -376,34 +328,8 @@ def get_files(dir_to_analyze, displayname):
 	return [files, files_bytes, num_dirs, num_files]
 
 # Create a list of dirs and files from a root
-def recurse_subdiro(dir, recurse, all):
-	tfiles = []
-	rfiles = []
-	if not recurse:
-		tfiles = listdir(dir)
-	else:
-		for root, dirs, files in walk(dir):
-			[head, tail] = split(root)
-			tfiles.append(root)
-			for file in files:
-				tfiles.append(join(root, file))
-		tfiles[:] = [relpath(path, dir) for path in tfiles]
-		if tfiles[0] == ".":
-			tfiles.pop(0)
-	if not all:
-		for f in tfiles:
-			[head, tail] = split(f)
-			if tail.startswith('.') or head.startswith('.'):
-				pass
-			else:
-				rfiles.append(f)
-	else:
-		rfiles = tfiles
-	return rfiles
-
-# Create a list of dirs and files from a root
 def recurse_subdir(dir_to_analyze, recurse, all_flag):
-	dir_count = 0
+	dir_count = 1
 	file_count = 0
 	tfiles = []
 	rfiles = []
@@ -475,7 +401,6 @@ def shallow_digest(file_to_digest):
 		print(digest)
 	return digest
 
-
 # Calulate a total size from a list of files
 def total_files(path, files):
 	total = 0
@@ -483,9 +408,7 @@ def total_files(path, files):
 		total = total + getsize(path + f)
 	return total
 
-
 # Classes
-
 # Utility class for calculating elapsed time between events
 # Typical usage is to instantiate, reset, and get elapsed time.
 #
@@ -515,7 +438,6 @@ class ElapsedTime:
 	# class method to reset time
 	def reset(self):
 		self.last_time = time.time()
-
 
 # Main program
 
