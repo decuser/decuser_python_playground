@@ -1,6 +1,6 @@
 .\" Install this manpage in ~/man/man1
 .\" echo 'export MANPATH="${HOME}/man:$MANPATH"' >> .bash_profile
-.Dd August 3, 2021
+.Dd August 5, 2021
 .Dt dircmp 1
 .Os
 .Sh NAME
@@ -8,9 +8,10 @@
 .Nd Compare 2 directories using sha1 checksums
 .Sh SYNOPSIS
 .Nm dircmp
-.Op Fl abdfhrsv
+.Op Fl abcdfhrsv
 .Op Fl -all
 .Op Fl -brief
+.Op Fl -compact
 .Op Fl -debug
 .Op Fl -fast
 .Op Fl -help
@@ -36,6 +37,10 @@ Include hidden files and directories in comparisons.
 Brief mode - causes
 .Nm
 to suppress file lists.
+.It Fl c -compact
+Compact mode - causes
+.Nm
+to more compactly display results without any timing information.
 .It Fl d -debug
 Debug mode - causes
 .Nm
