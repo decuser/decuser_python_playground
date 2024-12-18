@@ -16,6 +16,7 @@
 
 # Changelog
 #
+# 20210804 0.7.3 added compact output - good for testing and looks good, too :)
 # 20210804 0.7.2 bugfix unlisted - issue with directories added to filelist
 # 20210804 0.7.1 bugfix 14 -b -s not working
 # 20210802 0.7.0 added support for single directory and fixed counting
@@ -56,10 +57,10 @@ BLOCKSIZE = 65536
 SAMPLESIZE = (1 * 1024 * 1024)
 BUFFERING = -1  # 0 for no bufferning, -1 for default
 SEED = (10 * 1024 * 1024)
-SW_VERSION = "0.7.2"
+SW_VERSION = "0.7.3"
 __version__ = SW_VERSION
 CREATED = "20191210"
-UPDATED = "20210804"
+UPDATED = "20210805"
 
 # Global Data Structures
 src_only = {}
@@ -77,7 +78,7 @@ dst_only_duplicates = {}
 # Calculate sha1 digests
 # return a dictionary of files and digests and a reverse index of the dictionary
 def calculate_sha1s(dir_to_parse, display, files):
-	if not args['brief']:
+	if not (args['brief'] or args['compact']):
 		print(f"Calculating sha1 digests in {display} ", end="")
 	files_dict = {}
 	current_progress = 0
@@ -101,7 +102,7 @@ def calculate_sha1s(dir_to_parse, display, files):
 def compare_directories(ldict, rrevidx, rdict, srctxt, dsttxt):
 	only = {}
 	digest_diff = {}
-	if not args['brief']:
+	if not (args['brief'] or args['compact']):
 		print(f"Comparing {srctxt} to {dsttxt} ...", end="")
 	# look for src files in dst
 	for key in ldict.keys():
@@ -154,7 +155,8 @@ def display_dictionary(dict_to_display, display, num, sortorder="kv", displayord
 				print(f"{k} {v}")
 			else:
 				print(f"{v} {k}")
-		print()
+		if not (args['brief'] or args['compact']):
+			print()
 
 # Display duplicates in a directory, given a dictionary of duplicates
 def display_duplicates(duplicates, dir_to_display):
@@ -182,6 +184,8 @@ def display_duplicates(duplicates, dir_to_display):
 
 # Display dots when doing long running tasks (needs improvements)
 def display_progress(curr, total, inc):
+	if (args['brief'] or args['compact']):
+		return
 	if args['debug']:
 		print(f"curr: {curr}")
 		print(f"total: {total}")
@@ -198,15 +202,17 @@ def display_welcome():
 	print("\n+----------------------------------+")
 	print(f"| Welcome to dircmp version {SW_VERSION}  |")
 	print(f"| Created by Will Senn on {CREATED} |")
-	print(f"| Last updated {UPDATED}	 	   |")
+	print(f"| Last updated {UPDATED}            |")
 	print("+----------------------------------+")
+	display_command_line()
 	if not args['brief']:
 		if args['debug']:
 			print(f"** Debug: True **")
 		print("Digest: sha1")
 		print(f"Source (src): {args['srcdir']}")
 		if not args['single']:
-			print(f"\nDestination (dst): {args['dstdir']}")
+			print(f"Destination (dst): {args['dstdir']}")
+		print(f"Compact mode: {args['compact']}")
 		print(f"Single directory mode: {args['single']}")
 		print(f"Show all files: {args['all']}")
 		print(f"Recurse subdirectories: {args['recurse']}")
@@ -239,6 +245,7 @@ def get_arguments():
 	#	-r, --recurse	Recurse subdirectories
 	#	-f, --fast		Perform shallow digests (super fast, but less accurate)
 	#	-d, --debug		Debug mode
+	#   -c, --compact   Compact mode
 	#   -s, --single	Analyze single directory
 	#	-v, --Version	Show the program version number
 	parser = argparse.ArgumentParser(
@@ -257,6 +264,8 @@ def get_arguments():
 						help='Perform shallow digests (super fast, but less accurate)')
 	parser.add_argument('-d', '--debug', action='store_true',
 						help='Debug mode')
+	parser.add_argument('-c', '--compact', action='store_true',
+						help='Compact mode')
 	parser.add_argument('-s', '--single', action='store_true',
 						help='Single directory mode')
 	parser.add_argument('-v', '--version', action='version',
@@ -281,9 +290,17 @@ def get_arguments():
 
 	return args
 
+def display_command_line():
+	print("Arguments:", end=" ")
+	for i in range(1, len(sys.argv)):
+		print(sys.argv[i], end="")
+		if i < len(sys.argv):
+			print(" ", end="")
+	print()
+
 # Reconcile differences
 def get_diff_names_same_digests(ldigests, rdigests):
-	if not args['brief']:
+	if not (args['brief'] or args['compact']):
 		print(f"Checking for different names, same digest ...", end="")
 	digest = []
 	for k, v in ldigests.items():
@@ -307,7 +324,7 @@ def unique(list1):
 # Analyze src directory for files having duplicate contents
 # return dictionary of duplicates
 def get_duplicates(dict_to_analyze, revidx, display):
-	if not args['brief']:
+	if not (args['brief'] or args['compact']):
 		print(f"Analyzing {display} directory ...", end="")
 
 	duplicates = {}
@@ -323,7 +340,7 @@ def get_duplicates(dict_to_analyze, revidx, display):
 
 # Read the source files into src_files list and count them
 def get_files(dir_to_analyze, displayname):
-	if not args['brief']:
+	if not (args['brief'] or args['compact']):
 		print(f"Scanning {displayname} ...", end="")
 	[num_dirs, num_files, files] = recurse_subdir(dir_to_analyze, args['recurse'], args['all'])
 	files_bytes = total_files(dir_to_analyze, files)
@@ -432,7 +449,7 @@ class ElapsedTime:
 
 	# class method to print elapsed time in (XXs) form
 	def display(self, prefix, suffix):
-		if not args['brief']:
+		if not (args['brief'] or args['compact']):
 			e = round(self.elapsed, 2)
 			print(f"{prefix}({e}s){suffix}", end="")
 
@@ -500,7 +517,7 @@ if not args['single']:
 else:
 	# just get duplicates in src
 	src_only_duplicates = get_duplicates(src_files_dict, revidx_src_files, "src")
-	timer.display(f"done ", ".\n")
+	timer.display(f"done ", ".\n\n")
 
 # Get counts of buckets 
 num_src_only_files = len(src_only)
@@ -540,9 +557,10 @@ if not args['brief']:
 		print()
 
 # Display Summary
-if not args['brief']:
+if not (args['brief'] or args['compact']):
 	print("Summary\n-------")
-print(f"Started at {start_date}")
+if not args['compact']:
+	print(f"Started at {start_date}")
 totalfiles = num_src_files + num_dst_files
 totaldirs = num_src_dirs + num_dst_dirs
 if args['single']:
@@ -565,10 +583,9 @@ else:
 final = time.time()
 
 totaltime = round(final - start_time, 2)
-print("Finished at ", end="")
-print(datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'))
-if not args['brief']:
+if not args['compact']:
+	print("Finished at ", end="")
+	print(datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'))
+if not (args['brief'] or args['compact']):
 	print()
-
-if not args['brief']:
 	print(f"Total running time: {totaltime}s.")
