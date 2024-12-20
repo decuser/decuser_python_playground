@@ -11,8 +11,9 @@ import time
 #	timer.elapsed()
 #
 class ElapsedTime:
-    def __init__(self, args):
-        self.args_dict = args
+    def __init__(self, logger, config):
+        self.logger = logger
+        self.config = config
 
     last_time = time.time()
 
@@ -23,11 +24,11 @@ class ElapsedTime:
         ElapsedTime.last_time = time.time()
         return elapsed
 
-    # class method to print elapsed time in (XXs) form
+    # class method to logger.info elapsed time in (XXs) form
     def display(self, prefix, suffix):
-        if not (self.args_dict['brief'] or self.args_dict['compact']):
+        if not (self.config.brief or self.config.compact):
             e = round(self.elapsed, 2)
-            print(f"{prefix}({e}s){suffix}", end="")
+            self.logger.info(f"{prefix}({e}s){suffix}")
 
     # class method to reset time
     def reset(self):

@@ -43,10 +43,13 @@
 #-- done 20191212 wds recursion and hidden file support
 #-- done 20191210 wds brief mode (suppress detailed lists)
 #--------------------------------------------------------------------
+import sys
+from datetime import datetime
 
-from DirectoryAnalyzer import DirectoryAnalyzer
-from Globals import ARGS, __version__, CREATED, UPDATED
-from Utilities import Utilities as utils
+from dir_analyzer import DirAnalyzer
+from utils import Utils
+from app_config import ArgumentParser
+from logger_config import setup_logger
 
 # --------------------------------------------
 # -- display_welcome()
@@ -71,31 +74,44 @@ from Utilities import Utilities as utils
 # -- instance variables affected:
 # --     none
 # --------------------------------------------
-def display_welcome():
-    print("\n+----------------------------------+")
-    print(f"| Welcome to dircmp version {__version__}  |")
-    print(f"| Created by Will Senn on {CREATED} |")
-    print(f"| Last updated {UPDATED}            |")
-    print("+----------------------------------+")
-    utils.display_command_line()
-    if not ARGS['brief']:
-        if ARGS['debug']:
-            print(f"** Debug: True **")
-        print("Digest: sha1")
-        print(f"Source (first): {ARGS['firstdir']}")
-        if not ARGS['single']:
-            print(f"Destination (second): {ARGS['seconddir']}")
-        print(f"Compact mode: {ARGS['compact']}")
-        print(f"Single directory mode: {ARGS['single']}")
-        print(f"Show all files: {ARGS['all']}")
-        print(f"Recurse subdirectories: {ARGS['recurse']}")
-        print(f"Calculate shallow digests: {ARGS['fast']}\n")
+def display_welcome(logger, config):
+    logger.info("+----------------------------------+")
+    logger.info(f"| Welcome to dircmp version {config.__version__}  |")
+    logger.info(f"| Created by Will Senn on {config.CREATED} |")
+    logger.info(f"| Last updated {config.UPDATED}            |")
+    logger.info("+----------------------------------+")
+    Utils.display_command_line(logger)
+    if not config.brief:
+        if config.debug:
+            logger.debug(f"** Debug: True **")
+        logger.info("Digest: sha1")
+        logger.info(f"Source (first): {config.firstdir}")
+        if not config.single:
+            logger.info(f"Destination (second): {config.seconddir}")
+        logger.info(f"Compact mode: {config.compact}")
+        logger.info(f"Single directory mode: {config.single}")
+        logger.info(f"Show all files: {config.all}")
+        logger.info(f"Recurse subdirectories: {config.recurse}")
+        logger.info(f"Calculate shallow digests: {config.fast}")
 
-#------------------------------------------------
-#-- main program
-#------------------------------------------------
-display_welcome()
 
-da = DirectoryAnalyzer()
-da.analyze()
-da.display_results()
+def main():
+    parser = ArgumentParser(version='0.7.4')
+    try:
+        config = parser.parse_arguments()
+        logger = setup_logger(config.debug, "dircmp", "dircmp.log")
+
+        logger.info("Started at " + datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'))
+        display_welcome(logger, config)
+        da = DirAnalyzer(logger, config)
+        da.analyze()
+        print()
+        da.display_results()
+
+        logger.info("Finished at " + datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'))
+
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+
+if __name__ == '__main__':
+    main()
