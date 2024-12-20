@@ -5,9 +5,9 @@ from utils import Utils
 class AppConfig:
     def __init__(self, firstdir, seconddir=None, brief=False, compact=False, debug=False, recurse=False, fast=False, all=False, single=False):
         self.__author__ = "Will Senn"
-        self.__version__ = "0.7.4"
+        self.__version__ = "0.7.5"
         self.CREATED = "20191210"
-        self.UPDATED = "20241217"
+        self.UPDATED = "20241220"
 
         # Logic Constants
         self.BLOCKSIZE = 65536

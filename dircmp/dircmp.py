@@ -18,6 +18,7 @@
 #-- Names only in and Content only in...
 #--
 #-- Changelog
+#-- 20241220 0.7.5 refactored globals, config, and logging
 #-- 20241217 0.7.4 started refactor prior to going gui
 #-- 20210804 0.7.3 added compact output - good for testing and looks good, too :)
 #-- 20210804 0.7.2 bugfix unlisted - issue with directories added to filelist
@@ -105,7 +106,6 @@ def main():
         display_welcome(logger, config)
         da = DirAnalyzer(logger, config)
         da.analyze()
-        print()
         da.display_results()
 
         logger.info("Finished at " + datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'))
