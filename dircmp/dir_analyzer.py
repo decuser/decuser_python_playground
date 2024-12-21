@@ -14,7 +14,7 @@ from utils import Utils
 #--     none
 #--
 #-- methods:
-#--     get_diff_names_same_digests_list
+#--     find_files_same_digests_diff_names
 #--     get_files_list
 #--     get_duplicates_dict
 #--     compare_directories
@@ -25,23 +25,57 @@ from utils import Utils
 #------------------------------------------------
 class DirAnalyzer:
     def __init__(self, logger, config):
+        """
+        Initializes the object with logger, configuration, and various result tracking variables.
+
+        This method sets up the logger, configuration, and initializes several dictionaries and lists to track
+        the results of directory comparisons, including matches, differences, and duplicates.
+
+        Parameters:
+        logger (Logger): The logger instance used for logging output.
+        config (Config): The configuration object containing settings for the operation.
+
+        Instance Variables:
+        logger (Logger): The logger instance.
+        config (Config): The configuration object.
+        first_only (dict): Files only found in the first directory.
+        second_only (dict): Files only found in the second directory.
+        exact_match (dict): Dictionary of exact matches between directories.
+        first_digest_diff (dict): Files in the first directory with different digests.
+        second_digest_diff (dict): Files in the second directory with different digests.
+        diff_name_match_digest (list): Files with different names but matching digests.
+        match_name_diff_digest (list): Files with matching names but different digests.
+        first_only_duplicates (dict): Duplicates found in the first directory.
+        second_only_duplicates (dict): Duplicates found in the second directory.
+        num_second_files (int): Number of files in the second directory.
+        num_second_dirs (int): Number of directories in the second directory.
+        start_date (str): The datetime when the object was instantiated.
+        start_time (float): The start time for elapsed time calculation.
+        timer (ElapsedTime): An instance of the ElapsedTime class for tracking elapsed time.
+        num_first_only_files (list): List of counts for files only in the first directory.
+        num_second_only_files (list): List of counts for files only in the second directory.
+        num_exact_match (int): Count of exact matches between directories.
+        num_first_only_duplicates (int): Count of duplicates in the first directory.
+        num_second_only_duplicates (int): Count of duplicates in the second directory.
+        num_diff_name_match_digest (int): Count of files with different names but matching digests.
+        num_match_name_diff_digest (int): Count of files with matching names but different digests.
+        """
         self.logger = logger
         self.config = config
-        self.first_only = {}                                                # files only found in first
-        self.second_only = {}                                               # files only found in second
-        self.exact_match = {}                                               # dictionary of exact matche
-        self.first_digest_diff = {}                                         #
-        self.second_digest_diff = {}                                        #
-        self.diff_name_match_digest = []                                    #
-        self.match_name_diff_digest = []                                    #
-        self.first_only_duplicates = {}                                     # dictionary of duplicated found in first
-        self.second_only_duplicates = {}                                    # dictionary of duplicates found in second
-        self.num_second_files = 0                                           # number of files in second
-        self.num_second_dirs = 0                                            # number of directories in second
-        self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')   # datetime of istantiation
-        self.start_time = time.time()                                       # start time for elapsed calculation
-        self.timer = ElapsedTime(self.logger, self.config)                            # create the elapsed time timer
-
+        self.first_only = {}
+        self.second_only = {}
+        self.exact_match = {}
+        self.first_digest_diff = {}
+        self.second_digest_diff = {}
+        self.diff_name_match_digest = []
+        self.match_name_diff_digest = []
+        self.first_only_duplicates = {}
+        self.second_only_duplicates = {}
+        self.num_second_files = 0
+        self.num_second_dirs = 0
+        self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+        self.start_time = time.time()
+        self.timer = ElapsedTime(self.logger, self.config)
         self.num_first_only_files = []
         self.num_second_only_files = []
         self.num_exact_match = 0
@@ -50,35 +84,26 @@ class DirAnalyzer:
         self.num_diff_name_match_digest = 0
         self.num_match_name_diff_digest = 0
 
-        #--------------------------------------------
-    #-- compare_directories(self, ldict, rrevidx, rdict, firsttxt, secondtxt)
-    #--
-    #-- description:
-    #--     compares two directories for [exact match, same digest different name, same name different digests, only in]
-    #--     this method gets called twice, once to compare first with second and again to compare second with first
-    #--
-    #-- parameters:
-    #--     ldict - filename and digests for first
-    #--     rrevidx - a dictionary of digests with filenames for comparison
-    #--     rdict - filename and digests for second
-    #--     firsttxt - a string to display on output for the first directory
-    #--     secondtxt - a string to display on output for the second directory
-    #--
-    #-- returns:
-    #--     only - filenames and digests of files only found in first
-    #--     digest_diff - a dictionary of digests with mismatched names
-    #--
-    #--  globals referenced:
-    #--     none
-    #--
-    #-- instance variables referenced:
-    #--     ARGS_dict - brief, compact, firstdir, seconddir
-    #--
-    #-- instance variables affected:
-    #--     exact_match
-    #--     match_name_diff_digest
-    #--------------------------------------------
     def _compare_directories(self, ldict, rrevidx, rdict, firsttxt, secondtxt):
+        """
+        Compares two directories for different types of file matches:
+        exact match, same digest but different name, same name but different digests, and files only in one directory.
+
+        This method is called twice: once to compare the first directory with the second and again to compare the second with the first.
+
+        Parameters:
+        ldict (dict): Dictionary of filenames and digests for the first directory.
+        rrevidx (dict): Dictionary of digests with filenames for comparison.
+        rdict (dict): Dictionary of filenames and digests for the second directory.
+        firsttxt (str): Text to display for the first directory in output.
+        secondtxt (str): Text to display for the second directory in output.
+
+        Returns:
+        tuple: A tuple containing two elements:
+            - 'only' (dict): Filenames and digests of files found only in the first directory.
+            - 'digest_diff' (dict): A dictionary of digests with mismatched names.
+        """
+
         only = {}
         digest_diff = {}
         if not (self.config.brief or self.config.compact):
@@ -132,37 +157,23 @@ class DirAnalyzer:
 
         return [only, digest_diff]
 
-    # --------------------------------------------
-    # -- analyze(self)
-    # --
-    # -- description:
-    # --    organize and perform the analysis
-    # --
-    # -- parameters:
-    # --     none
-    # --
-    # -- returns:
-    # --     none
-    # --
-    # --  globals referenced:
-    # --     none
-    # --
-    # -- instance variables referenced:
-    # --     ARGS_dict, ARGS_dict - firstdir, single, seconddir
-    # --     get_files_list
-
-    # -- instance variables affected:
-
-
-    # --     none
-    # --------------------------------------------
     def analyze(self):
+        """
+        Organizes and performs the analysis.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+
         # get the source files
         [self.first_files, self.first_files_bytes, self.num_first_dirs, self.num_first_files] = Utils.get_files_list(self.config.firstdir, "first", self.logger, self.config)
         self.timer.display(f" {self.num_first_files} files found ", "")
 
         # calculate first sha1s
-        [self.first_files_dict, self.revidx_first_files] = Utils.calculate_sha1s(self.config.firstdir, "first", self.first_files, self.first_files_bytes, self.logger, self.config)
+        [self.first_files_dict, self.revidx_first_files] = Utils.calculate_sha1s(self.config.firstdir, "first", self.first_files, self.num_first_files, self.first_files_bytes, self.logger, self.config)
         self.timer.display(f" done ", "")
 
         if not self.config.single:
@@ -172,7 +183,7 @@ class DirAnalyzer:
 
             # calculate second sha1s
             [self.second_files_dict, self.revidx_second_files] = Utils.calculate_sha1s(self.config.seconddir, "second", self.second_files,
-                                                                    self.first_files_bytes, self.logger, self.config)
+                                                                    self.num_second_files, self.second_files_bytes, self.logger, self.config)
             self.timer.display(f" done ", "")
 
             # get all duplicates in first
@@ -194,7 +205,7 @@ class DirAnalyzer:
             self.timer.display(f"done ", "")
 
             # Get list of files with different names but same digest
-            self.diff_name_match_digest = Utils.get_diff_names_same_digests_list(self.first_digest_diff, self.second_digest_diff, self.logger, self.config)
+            self.diff_name_match_digest = Utils.find_files_same_digests_diff_names(self.first_digest_diff, self.second_digest_diff, self.logger, self.config)
             self.timer.display(f"done ", ".")
         else:
             # just get duplicates in first
@@ -215,6 +226,15 @@ class DirAnalyzer:
         self.num_match_name_diff_digest = len(self.match_name_diff_digest) * 2
 
     def display_results(self):
+        """
+        Displays the results of the analysis.
+
+        This method formats and outputs the results based on the current state of the analysis.
+
+        Returns:
+        None
+        """
+
         # Display buckets
         if not self.config.brief:
             Utils.display_duplicates_dict(self.first_only_duplicates, self.config.firstdir, self.logger, self.config)

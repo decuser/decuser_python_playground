@@ -1,27 +1,43 @@
 import time
 
-# Utility class for calculating elapsed time between events
-# Typical usage is to instantiate, reset, and get elapsed time.
-#
-# To instantiate prior to use:
-#	timer = ElapsedTime()
-# To reset and establish a reference time:
-#	timer.reset()
-# To get the elapsed time since the reference:
-#	timer.elapsed()
-#
 class ElapsedTime:
+    """
+    Utility class for calculating elapsed time between events.
+
+    This class allows you to measure the time between specific events by resetting
+    the reference time and then retrieving the elapsed time since that reference.
+
+    Typical usage:
+    - Instantiate: `timer = ElapsedTime()`
+    - Reset and establish reference time: `timer.reset()`
+    - Get elapsed time: `timer.elapsed()`
+
+    Methods:
+    - reset(): Resets the reference time.
+    - elapsed(): Returns the elapsed time since the last reset.
+    """
+
     def __init__(self, logger, config):
+        """
+        Initializes the ElapsedTime object with the provided logger and config.
+
+        Parameters:
+        logger (Logger): The logger instance used for logging output.
+        config (Config): The configuration object for the operation.
+        """
+
         self.logger = logger
         self.config = config
+        self.reset()  # Ensure the timer is initialized with a starting point
 
-    last_time = time.time()
+    def reset(self):
+        """Resets the reference time."""
+        self.last_time = time.time()
 
-    # class method to show elapsed time
     @property
     def elapsed(self):
-        elapsed = time.time() - ElapsedTime.last_time
-        ElapsedTime.last_time = time.time()
+        elapsed = time.time() - self.last_time
+        self.reset()  # Reset the timer after calculating elapsed time
         return elapsed
 
     # class method to logger.info elapsed time in (XXs) form
@@ -29,7 +45,3 @@ class ElapsedTime:
         if not (self.config.brief or self.config.compact):
             e = round(self.elapsed, 2)
             self.logger.info(f"{prefix}({e}s){suffix}")
-
-    # class method to reset time
-    def reset(self):
-        self.last_time = time.time()

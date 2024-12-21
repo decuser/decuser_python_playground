@@ -1,49 +1,52 @@
 #!/usr/bin/env python
 #--------------------------------------------------------------------
-#-- dircmp.py
-#--
-#-- canonical source located at https://github.com/decuser/decuser_python_playground.git
-#--
-#-- quirks
-#-- 20210803 "Only in" refers to file content, not filename, so a filename
-#-- might exist in only one of the trees being compared, but if its contents match a
-#-- file in the other tree, it will not be listed in "Only in". It will be noted in
-#-- "Different names but same digests"
-#-- For example:
-#-- in src, there's a file named only_in_src that contains the letter 'a'
-#-- in dst, there's a file named only_in_dst that contains the letter 'a'
-#-- The comparison would show 0 files Only in src, 0 files Only in dst and
-#-- 2 files Different names but same digests. To be clear, the program
-#-- privileges content over names. An enhancement would be to support
-#-- Names only in and Content only in...
-#--
-#-- Changelog
-#-- 20241220 0.7.5 refactored globals, config, and logging
-#-- 20241217 0.7.4 started refactor prior to going gui
-#-- 20210804 0.7.3 added compact output - good for testing and looks good, too :)
-#-- 20210804 0.7.2 bugfix unlisted - issue with directories added to filelist
-#-- 20210804 0.7.1 bugfix 14 -b -s not working
-#-- 20210802 0.7.0 added support for single directory and fixed counting
-#-- 20200620 0.6.2 added version argument
-#-- 20191218 0.6.1 bugfixes 7 empty source dir div/zero, 8 hidden files included erroneously
-#-- 20191218 0.6.0 refactored, embraced global data structures after back and forth
-#-- 20191216 0.5.1 added fast digest support, cleaned up a little
-#-- 20191212 0.5.0 added recursion and hidden file support, changed version scheme
-#-- 	to support more minor update versions
-#-- 20191210 0.4 refactored, added comments, added same name diff digest
-#-- 20191210 0.3 Added argparse functionality and brief mode support
-#-- 20191210 0.2 Added duplicate checking in src and dst individually
-#-- 20191210 0.1 Initial working SW_VERSION
-#--
-#-- Wishlist
-#-- 20210803 support names only in
-#-- done 20210802 fixed counting
-#-- done 20210730 added single directory analysis support
-#-- done 20191216 shallow digest (fast version)
-#-- done 20191216 progress indication during sha1 calc (simple version)
-#-- done 20191212 wds recursion and hidden file support
-#-- done 20191210 wds brief mode (suppress detailed lists)
+# dircmp.py
+#
+# Description:
+# This script compares two directory trees, listing differences in
+# filenames and file contents (based on SHA-1 digests). It identifies
+# files that are unique to each tree and those that have the same
+# content but different names. Output can be customized for different
+# use cases.
+#
+# Canonical source: https://github.com/decuser/decuser_python_playground.git
+#
+# Quirks:
+# - "Only in" refers to file contents, not filenames. Files with the same
+#   content in different directories but different names will be listed
+#   under "Different names but same digests" instead of "Only in."
+#   Example:
+#   - A file `only_in_src` in the source directory (containing 'a') and
+#     a file `only_in_dst` in the destination directory (also containing 'a')
+#     would be listed as 2 files under "Different names but same digests",
+#     not under "Only in src" or "Only in dst."
+#   - Future enhancement: Support for "Names only in" and "Content only in."
+#
+# Changelog:
+# 20241220 v0.7.5 - Refactored globals, config, and logging
+# 20241217 v0.7.4 - Refactor prior to GUI integration
+# 20210804 v0.7.3 - Added compact output
+# 20210804 v0.7.2 - Bugfix: Issue with directories added to filelist
+# 20210804 v0.7.1 - Bugfix: -b -s flags not working
+# 20210802 v0.7.0 - Added single directory support and fixed counting
+# 20200620 v0.6.2 - Added version argument
+# 20191218 v0.6.1 - Bugfixes: Empty source dir and hidden files issue
+# 20191218 v0.6.0 - Refactored, embraced global data structures
+# 20191216 v0.5.1 - Added fast digest support
+# 20191212 v0.5.0 - Added recursion, hidden file support, and version scheme change
+# 20191210 v0.4.0 - Refactor, comments, added same name diff digest
+# 20191210 v0.3.0 - Added argparse functionality and brief mode
+# 20191210 v0.2.0 - Added duplicate checking in src and dst
+# 20191210 v0.1.0 - Initial working version
+
+# Wishlist:
+# - Support for "Names only in" (in progress)
+# - Progress indication during SHA-1 calculation (completed)
+# - Shallow digest (fast version) (completed)
+# - Recursive directory and hidden file support (completed)
+# - Brief mode (completed)
 #--------------------------------------------------------------------
+
 import sys
 from datetime import datetime
 
@@ -52,30 +55,17 @@ from utils import Utils
 from app_config import ArgumentParser
 from logger_config import setup_logger
 
-# --------------------------------------------
-# -- display_welcome()
-# --
-# -- description:
-# --    display a banner
-# --
-# -- parameters:
-# --     none
-# --
-# -- returns:
-# --     none
-# --
-# --  globals referenced:
-# --     __version__
-# --     CREATED
-# --     UPDATED
-# --
-# -- instance variables referenced:
-# --     ARGS_dict - brief, debug, firstdir, single, seconddir, compact, all, recurse, fast
-# --
-# -- instance variables affected:
-# --     none
-# --------------------------------------------
 def display_welcome(logger, config):
+    """
+    Display a banner.
+
+    Parameters:
+        logger (Logger): The logger instance used for logging output.
+        config (Config): The configuration object for the operation.
+
+    Returns:
+        None
+    """
     logger.info("+----------------------------------+")
     logger.info(f"| Welcome to dircmp version {config.__version__}  |")
     logger.info(f"| Created by Will Senn on {config.CREATED} |")
@@ -97,6 +87,15 @@ def display_welcome(logger, config):
 
 
 def main():
+    """
+     The main entry point for the script. It parses command-line arguments, sets up logging,
+     displays a welcome message, and triggers the directory comparison and result display.
+
+     It initializes the `DirAnalyzer` class, performs the analysis, and logs the start and finish times.
+
+     Returns:
+         None
+     """
     parser = ArgumentParser(version='0.7.4')
     try:
         config = parser.parse_arguments()
