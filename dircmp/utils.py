@@ -1,39 +1,95 @@
-import asyncio
 import hashlib
-import random
 import sys
 import time
 from collections import defaultdict
-from os import walk, scandir
-from os.path import getsize, isdir, join, isfile, relpath
+from os import scandir
+from os.path import getsize, isdir, isfile, relpath
+
 
 class Utils:
     @staticmethod
-    def calculate_full_digest(file_to_digest, config):
+    def calculate_full_digest(
+            config,
+            logger,
+            file_to_digest,
+            start_time,
+            total_files,
+            total_files_processed,
+            total_bytes,
+            total_bytes_processed,
+            total_bytes_remaining,
+            total_bytes_accounted_for):
         """
-        Calculates the SHA-1 digest of a file's entire contents.
+         Calculates the SHA-1 digest of a file's entire contents.
 
-        This is the default method for generating the digest of a file.
+         This is the default method for generating the digest of a file.
 
-        Parameters:
-        file_to_digest (str): The path to the file whose digest is to be calculated.
-        config (Config): The configuration object that may influence the digest calculation.
+         Parameters:
+             config (Config): Configuration object containing options like buffer size and progress interval.
+             logger (Logger): Logger instance for progress and debug messages.
+             file_to_digest (str): Path to the file whose digest is to be calculated.
+             start_time (float): Start time of the operation, used for progress logging.
+             total_files (int): Total number of files to process.
+             total_files_processed (int): Number of files processed so far.
+             total_bytes (int): Total bytes across all files being processed.
+             total_bytes_processed (int): Total bytes processed across all files.
+             total_bytes_remaining (int): Remaining bytes to be processed.
+             total_bytes_accounted_for (int): Bytes accounted for by the digests so far.
 
-        Returns:
-        str: The calculated hex-encoded SHA-1 digest of the file's contents.
-        """
+         Returns:
+             dict: A dictionary containing:
+                 - 'start_time' (float): Updated start time for progress tracking.
+                 - 'total_files_processed' (int): Updated count of processed files.
+                 - 'total_bytes_processed' (int): Updated total bytes processed.
+                 - 'total_bytes_remaining' (int): Updated remaining bytes.
+                 - 'total_bytes_accounted_for' (int): Updated bytes accounted for by digests.
+                 - 'digest' (str): Calculated SHA-1 digest (hex-encoded).
+         """
+        time_interval = config.PROGRESS_UPDATE_INTERVAL
+        size = getsize(file_to_digest)
+        total_bytes_accounted_for += size
+
         hasher = hashlib.sha1()
+
         with open(file_to_digest, 'rb') as afile:
             buf = afile.read(config.BLOCKSIZE)
-            while len(buf) > 0:
+            buflen = len(buf)
+            total_bytes_processed += buflen
+            total_bytes_remaining -= buflen
+            while buflen > 0:
                 hasher.update(buf)
                 buf = afile.read(config.BLOCKSIZE)
+                buflen = len(buf)
+                total_bytes_processed += buflen
+                total_bytes_remaining -= buflen
+                elapsed_time = time.time() - start_time
+                if elapsed_time >= time_interval:
+                    percent = round((total_bytes_processed / total_bytes * 100), 2)
+                    logger.info(
+                        f"Processed {percent}% - {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
+                        f"({Utils.convert_bytes_to_human_readable(total_bytes_processed)} of {Utils.convert_bytes_to_human_readable(total_bytes)}), "
+                        f"{Utils.convert_bytes_to_human_readable(total_bytes_remaining)} remaining "
+                        f"({total_files_processed}/{total_files} files processed).")
+                    start_time = time.time()
+
+                if total_bytes_remaining < 0:
+                    logger.debug(
+                        f"total byte: {total_bytes} - total bytes processed {total_bytes_processed} = total bytes remaining {total_bytes_remaining}")
+
+        total_files_processed += 1
         digest = hasher.hexdigest()
-        afile.close()
-        return digest
+        logger.debug(f"Digest: {digest}")
+
+        return {'start_time': start_time,
+                'total_files_processed': total_files_processed,
+                'total_bytes_processed': total_bytes_processed,
+                'total_bytes_remaining': total_bytes_remaining,
+                'total_bytes_accounted_for': total_bytes_processed,
+                'digest': digest,
+                }
 
     @staticmethod
-    def calculate_sha1s(dir_to_parse, display, files, num_files, src_files_bytes, logger, config):
+    def calculate_sha1s(dir_to_parse, display, files, file_bytes, logger, config):
         """
         Calculates SHA-1 digests for files in a given directory.
 
@@ -56,24 +112,67 @@ class Utils:
         if not (config.brief or config.compact):
             logger.info(f"Calculating sha1 digests in {display} ")
         files_dict = {}
-        current_progress = 0
-        increment = num_files // 10  # Define increment as 1% of total size
+
+        # track cumulative vars (for use in calculating progress)
+        # these are passed to the digest calculation routines and returned by them as a dictionary tuple
+        start_time = time.time()  # time since last reset
+        total_files = len(files)
+        total_files_processed = 0  # files processed
+        total_bytes = file_bytes
+        total_bytes_processed = 0  # bytes processed
+        total_bytes_remaining = file_bytes  # files left to process
+        total_bytes_accounted_for = 0  # when doing shallow digests this keeps track of the full file size
 
         for f in files:
             if isfile(dir_to_parse + f):
                 if config.fast:
-                    files_dict[f] = Utils.calculate_shallow_digest(dir_to_parse + f, logger, config)
+                    results = Utils.calculate_shallow_digest(
+                        config,
+                        logger,
+                        dir_to_parse + f,
+                        start_time,
+                        total_files,  # stays the same throughout calulation
+                        total_files_processed,
+                        total_bytes,  # stays the same throughout calculation
+                        total_bytes_processed,
+                        total_bytes_remaining,
+                        total_bytes_accounted_for)
+
+                    # Update variables based on the result
+                    start_time = results['start_time']
+                    total_files_processed = results['total_files_processed']
+                    total_bytes_processed = results['total_bytes_processed']
+                    total_bytes_remaining = results['total_bytes_remaining']
+                    total_bytes_accounted_for = results['total_bytes_accounted_for']
+                    files_dict[f] = results['digest']
+
                 else:
-                    files_dict[f] = Utils.calculate_full_digest(dir_to_parse + f, config)
-
-                current_progress += 1
-
-                # Only log if progress exceeds last logged progress by increment
-                if current_progress % increment == 0:
-                    Utils.display_progress(current_progress, num_files, logger, config)
-
+                    results = Utils.calculate_full_digest(
+                        config,
+                        logger,
+                        dir_to_parse + f,
+                        start_time,
+                        total_files,
+                        total_files_processed,
+                        total_bytes,
+                        total_bytes_processed,
+                        total_bytes_remaining,
+                        total_bytes_accounted_for)
+                    #                    total_files_processed = results['files_processed']
+                    start_time = results['start_time']
+                    total_files_processed = results['total_files_processed']
+                    total_bytes_processed = results['total_bytes_processed']
+                    total_bytes_remaining = results['total_bytes_remaining']
+                    total_bytes_accounted_for = results['total_bytes_accounted_for']
+                    files_dict[f] = results['digest']
             else:
                 logger.debug(f"Not a file: {dir_to_parse + f}")
+
+        logger.info(
+            f"Processed {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
+            f"({Utils.convert_bytes_to_human_readable(total_bytes_accounted_for)} of files), "
+            f"{Utils.convert_bytes_to_human_readable(total_bytes_remaining)} remaining "
+            f"({total_files_processed}/{total_files} files processed).")
 
         # Create revidx_src_files, a reverse index for searching src_files_dict by value
         revidx = defaultdict(set)
@@ -83,53 +182,108 @@ class Utils:
         return [files_dict, revidx]
 
     @staticmethod
-    def calculate_shallow_digest(file_to_digest, logger, config):
+    def calculate_shallow_digest(
+            config,
+            logger,
+            file_to_digest,
+            start_time,
+            total_files,
+            total_files_processed,
+            total_file_bytes,
+            total_bytes_processed,
+            total_bytes_remaining,
+            total_bytes_accounted_for):
         """
-        Calculates a SHA-1 digest from the encoded file size in bytes,
-        plus the first and last SAMPLESIZE bytes of the file.
+        Calculates a fast SHA-1 digest for a file using a hybrid approach:
+        - For files ≤ 10 MB: Reads and hashes the entire file.
+        - For files > 10 MB: Hashes the file size (in bytes) along with the first and last
+          `SAMPLESIZE` bytes of the file.
 
-        This is the -f --fast method.
+        This approach balances speed and integrity, making it suitable for scenarios
+        where small files are more likely to be edited, and efficiency is prioritized
+        for larger files.
 
         Parameters:
-        file_to_digest (str): The path to the file whose digest is to be calculated.
-        logger (Logger): The logger instance used for logging output.
-        config (Config): The configuration object for the operation.
+            file_to_digest (str): Path to the file whose digest is to be calculated.
+            start_time (float): Start time of the operation, used for progress logging.
+            total_files_processed (int): Number of files processed so far.
+            total_files (int): Total number of files to process.
+            total_bytes_processed (int): Total bytes processed across all files.
+            total_file_bytes (int): Total bytes across all files being processed.
+            total_bytes_remaining (int): Remaining bytes to be processed.
+            total_bytes_accounted_for (int): Bytes accounted for by the digests so far.
+            logger (Logger): Logger instance for progress and debug messages.
+            config (Config): Configuration object containing options like buffer size,
+                             sampling size, and progress interval.
 
         Returns:
-        str: The calculated hex-encoded SHA-1 digest.
+            dict: A dictionary containing:
+                - 'total_files_processed' (int): Updated count of processed files.
+                - 'total_bytes_processed' (int): Updated total bytes processed.
+                - 'total_bytes_remaining' (int): Updated remaining bytes.
+                - 'digest' (str): Calculated SHA-1 digest (hex-encoded).
+                - 'start_time' (float): Updated start time for progress tracking.
         """
+        time_interval = config.PROGRESS_UPDATE_INTERVAL
 
-        # seed the random number generator
-        random.seed(config.SEED)
         hasher = hashlib.sha1()
         size = getsize(file_to_digest)
-
+        total_bytes_accounted_for += size
         logger.debug(f"size: {size}")
 
         # check if size <= 10 MB
         if size <= (10 * 1024 * 1024):
             logger.debug("using regular digest")
 
-            # return regular digest
+            # regular digest
             with open(file_to_digest, 'rb', config.BUFFERING) as afile:
                 buf = afile.read(config.BLOCKSIZE)
-                while len(buf) > 0:
+                buflen = len(buf)
+                while buflen > 0:
+                    total_bytes_processed += buflen
+                    elapsed_time = time.time() - start_time
+                    if elapsed_time >= time_interval:
+                        percent = round((total_bytes_accounted_for / total_file_bytes * 100), 2)
+                        logger.info(
+                            f"Processed {percent}% - {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
+                            f"({Utils.convert_bytes_to_human_readable(total_bytes_accounted_for)} of files), "
+                            f"{Utils.convert_bytes_to_human_readable(total_bytes_remaining)} remaining "
+                            f"({total_files_processed}/{total_files} files processed).")
+                        start_time = time.time()
                     hasher.update(buf)
                     buf = afile.read(config.BLOCKSIZE)
-            hasher.hexdigest()
-            afile.close()
+                    buflen = len(buf)
         else:
             with open(file_to_digest, "rb", config.BUFFERING) as afile:
                 hasher.update(str.encode(str(size)))
                 buf = afile.read(config.SAMPLESIZE)
+                buflen = len(buf)
+                total_bytes_processed += buflen
                 hasher.update(buf)
                 afile.seek(size - config.SAMPLESIZE)
                 buf = afile.read(config.SAMPLESIZE)
                 hasher.update(buf)
-            afile.close()
+            elapsed_time = time.time() - start_time
+            if elapsed_time >= time_interval:
+                percent = round((total_bytes_accounted_for / total_file_bytes * 100), 2)
+                logger.info(
+                    f"Processed {percent}% - {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
+                    f"({Utils.convert_bytes_to_human_readable(total_bytes_accounted_for)} of files), "
+                    f"{Utils.convert_bytes_to_human_readable(total_bytes_remaining)} remaining "
+                    f"({total_files_processed}/{total_files} files processed).")
+                start_time = time.time()
+        total_bytes_remaining -= size
+        total_files_processed += 1
         digest = hasher.hexdigest()
         logger.debug(digest)
-        return digest
+
+        return {'start_time': start_time,
+                'total_files_processed': total_files_processed,
+                'total_bytes_processed': total_bytes_processed,
+                'total_bytes_remaining': total_bytes_remaining,
+                'total_bytes_accounted_for': total_bytes_accounted_for,
+                'digest': digest,
+                }
 
     @staticmethod
     def calculate_total_size_of_files(path, files):
@@ -149,6 +303,30 @@ class Utils:
         return total
 
     @staticmethod
+    def convert_bytes_to_human_readable(numbytes):
+        """
+        Return the given bytes as a human friendly kb, mb, gb, or tb string.
+
+        xref: https://stackoverflow.com/a/31631711
+        """
+        numbytes = float(numbytes)
+        kb = float(1024)
+        mb = float(kb ** 2)  # 1,048,576
+        gb = float(kb ** 3)  # 1,073,741,824
+        tb = float(kb ** 4)  # 1,099,511,627,776
+
+        if numbytes < kb:
+            return '{0} {1}'.format(numbytes, 'Bytes' if 0 == numbytes > 1 else 'Byte')
+        elif kb <= numbytes < mb:
+            return '{0:.2f} KB'.format(numbytes / kb)
+        elif mb <= numbytes < gb:
+            return '{0:.2f} mb'.format(numbytes / mb)
+        elif gb <= numbytes < tb:
+            return '{0:.2f} gb'.format(numbytes / gb)
+        elif tb <= numbytes:
+            return '{0:.2f} tb'.format(numbytes / tb)
+
+    @staticmethod
     def display_command_line(logger):
         """
         Displays the command line arguments that were passed to the program.
@@ -162,7 +340,7 @@ class Utils:
         outstr = ""
         outstr += "Arguments:"
         for i in range(1, len(sys.argv)):
-            outstr+= sys.argv[i]
+            outstr += sys.argv[i]
             if i < len(sys.argv):
                 outstr += " "
         logger.info(outstr)
@@ -236,31 +414,84 @@ class Utils:
                     for f in keys:
                         logger.info(f"{v} {f}")
 
-    # Display dots when doing long-running tasks (needs improvements)
     @staticmethod
-    def display_progress(curr, total, logger, config):
+    def find_duplicates(dict_to_analyze, revidx, display, logger, config):
         """
-        Displays progress of a long-running task by outputting updates.
+        Scans a dictionary of filenames and digests, and identifies files with matching digests.
 
         Parameters:
-        curr (int): The current progress or step.
-        total (int): The total number of steps.
-        inc (int): The increment step for progress.
+        dict_to_analyze (dict): A dictionary of filenames and their corresponding digests.
+        revidx (dict): A reverse index of digests with filenames for duplicate checking.
+        display (str): A string to display on output.
         logger (Logger): The logger instance used for logging output.
         config (Config): The configuration object for the operation.
 
         Returns:
-        None
+        dict: A dictionary mapping filenames to their corresponding digests of duplicate files (same digest).
         """
-        if config.brief or config.compact:
-            return
-        if config.debug:
-            logger.debug(f"curr: {curr}")
-            logger.debug(f"total: {total}")
+        if not (config.brief or config.compact):
+            logger.info(f"Analyzing {display} directory ...")
 
-        # Display the progress (you can adjust this to be more concise if needed)
-        per_progress = int((curr / total) * 100)  # Percentage progress
-        logger.info(f"Progress: {curr}/{total} files ({per_progress}%)")
+        duplicates = {}
+        # look for duplicate content in first
+        for key in dict_to_analyze.keys():
+            ahash = dict_to_analyze[key]
+            match_digest = revidx.get(ahash)
+            if match_digest is not None:
+                for fil in match_digest:
+                    if key != fil:
+                        duplicates[key] = ahash
+        return duplicates
+
+    @staticmethod
+    def find_files(dir_to_analyze, displayname, logger, config):
+        """
+        Retrieves a list of files and directories in a specified directory,
+        and calculates the total size and counts of files and directories.
+
+        Parameters:
+        dir_to_analyze (str): The directory to analyze, including the trailing slash.
+        displayname (str): A string to log, indicating the directory being scanned.
+        logger (Logger): The logger instance used for logging output.
+        config (Config): The configuration object for the operation.
+
+        Returns:
+        tuple: A tuple containing:
+            - files (list): A list of files in the directory.
+            - files_bytes (int): Total size in bytes of the files.
+            - num_dirs (int): The number of directories in the directory.
+            - num_files (int): The number of files in the directory.
+        """
+        if not (config.brief or config.compact):
+            logger.info(f"Scanning {displayname} ...")
+
+        total_files = 0
+        total_dirs = 0
+        all_files = []
+
+        def should_include(name):
+            return config.all or not name.startswith('.')
+
+        def process_directory(path, recurse=False):
+            nonlocal total_files, total_dirs, all_files
+            with scandir(path) as it:
+                for entry in it:
+                    if should_include(entry.name):
+                        if entry.is_dir():
+                            total_dirs += 1
+                            if recurse:
+                                process_directory(entry.path, recurse)
+                        elif entry.is_file():
+                            total_files += 1
+                            all_files.append(relpath(entry.path, dir_to_analyze))
+
+        if config.recurse:
+            process_directory(dir_to_analyze, recurse=True)
+        else:
+            process_directory(dir_to_analyze, recurse=False)
+
+        files_bytes = Utils.calculate_total_size_of_files(dir_to_analyze, all_files)
+        return [all_files, files_bytes, total_dirs, total_files]
 
     @staticmethod
     def find_files_same_digests_diff_names(ldigests, rdigests, logger, config):
@@ -302,123 +533,6 @@ class Utils:
         # Return the list of digests and their corresponding sorted names
         return digest
 
-
-    @staticmethod
-    def get_duplicates_dict(dict_to_analyze, revidx, display, logger, config):
-        """
-        Scans a dictionary of filenames and digests, and identifies files with matching digests.
-
-        Parameters:
-        dict_to_analyze (dict): A dictionary of filenames and their corresponding digests.
-        revidx (dict): A reverse index of digests with filenames for duplicate checking.
-        display (str): A string to display on output.
-        logger (Logger): The logger instance used for logging output.
-        config (Config): The configuration object for the operation.
-
-        Returns:
-        dict: A dictionary mapping filenames to their corresponding digests of duplicate files (same digest).
-        """
-        if not (config.brief or config.compact):
-            logger.info(f"Analyzing {display} directory ...")
-
-        duplicates = {}
-        # look for duplicate content in first
-        for key in dict_to_analyze.keys():
-            ahash = dict_to_analyze[key]
-            match_digest = revidx.get(ahash)
-            if match_digest is not None:
-                for fil in match_digest:
-                    if key != fil:
-                        duplicates[key] = ahash
-        return duplicates
-
-    @staticmethod
-    def get_files_list(dir_to_analyze, displayname, logger, config):
-        """
-        Retrieves a list of files and directories in a specified directory,
-        and calculates the total size and counts of files and directories.
-
-        Parameters:
-        dir_to_analyze (str): The directory to analyze, including the trailing slash.
-        displayname (str): A string to log, indicating the directory being scanned.
-        logger (Logger): The logger instance used for logging output.
-        config (Config): The configuration object for the operation.
-
-        Returns:
-        tuple: A tuple containing:
-            - files (list): A list of files in the directory.
-            - files_bytes (int): Total size in bytes of the files.
-            - num_dirs (int): The number of directories in the directory.
-            - num_files (int): The number of files in the directory.
-        """
-        if not (config.brief or config.compact):
-            logger.info(f"Scanning {displayname} ...")
-        result = Utils.get_files_recursively(dir_to_analyze, config.recurse, config.all, logger)
-        files_bytes = Utils.calculate_total_size_of_files(dir_to_analyze, result["files"])
-        return [result["files"], files_bytes, result["directory_count"], result["file_count"]]
-
-    @staticmethod
-    def get_files_recursively(dir_to_analyze, recurse=False, all_flag=False, logger=None):
-        """
-        Creates a list of directories and files from a specified root directory, optionally
-        including subdirectories and all files based on the flags.
-
-        Parameters:
-        dir_to_analyze (str): The root directory to analyze.
-        recurse (bool, optional): Whether to include subdirectories. Defaults to False.
-        all_flag (bool, optional): Whether to include all files, including hidden ones. Defaults to False.
-        logger (Logger, optional): Logger instance to log progress.
-
-        Returns:
-        dict: A dictionary with the counts of directories and files, and a list of file paths.
-        """
-        start_time = time.time()
-        scanned_files = 0
-        scanned_dirs = 0
-        total_files = 0
-        total_dirs = 0
-        all_files = []
-
-        def should_include(name):
-            return all_flag or not name.startswith('.')
-
-        def count_and_filter_entries(path):
-            nonlocal scanned_files, scanned_dirs
-            file_count, dir_count, entries = 0, 0, []
-            with scandir(path) as it:
-                for entry in it:
-                    if should_include(entry.name):
-                        if entry.is_dir():
-                            dir_count += 1
-                        if entry.is_file():
-                            file_count += 1
-                            entries.append(entry.path)
-            scanned_files += file_count
-            scanned_dirs += dir_count
-            return file_count, dir_count, entries
-
-        if not recurse:
-            file_count, dir_count, entries = count_and_filter_entries(dir_to_analyze)
-            all_files.extend(relpath(e, dir_to_analyze) for e in entries)
-            total_files += file_count
-            total_dirs += dir_count
-        else:
-            for root, dirs, files in walk(dir_to_analyze):
-                if not should_include(root):
-                    continue
-                rel_root = relpath(root, dir_to_analyze)
-                if rel_root != ".":
-                    all_files.append(rel_root)
-                for file in files:
-                    if should_include(file):
-                        total_files += 1
-                        all_files.append(relpath(join(root, file), dir_to_analyze))
-                for dir in dirs:
-                    if should_include(dir):
-                        total_dirs += 1
-
-        return {"directory_count": total_dirs, "file_count": total_files, "files": all_files}
-
     @staticmethod
     def validate_directories(dirs):
         """
@@ -431,7 +545,6 @@ class Utils:
         bool: True if all directories exist, False otherwise.
         """
 
-        for dir in dirs:
-            if not isdir(dir):
-                raise ValueError(f"{dir} is not a directory")
-
+        for tdir in dirs:
+            if not isdir(tdir):
+                raise ValueError(f"{tdir} is not a directory")

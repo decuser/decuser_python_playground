@@ -15,8 +15,8 @@ from utils import Utils
 #--
 #-- methods:
 #--     find_files_same_digests_diff_names
-#--     get_files_list
-#--     get_duplicates_dict
+#--     find_files
+#--     find_duplicates
 #--     compare_directories
 #--     display_duplicates_dict
 #--     display_welcome
@@ -169,29 +169,29 @@ class DirAnalyzer:
         """
 
         # get the source files
-        [self.first_files, self.first_files_bytes, self.num_first_dirs, self.num_first_files] = Utils.get_files_list(self.config.firstdir, "first", self.logger, self.config)
+        [self.first_files, self.first_files_bytes, self.num_first_dirs, self.num_first_files] = Utils.find_files(self.config.firstdir, "first", self.logger, self.config)
         self.timer.display(f" {self.num_first_files} files found ", "")
 
         # calculate first sha1s
-        [self.first_files_dict, self.revidx_first_files] = Utils.calculate_sha1s(self.config.firstdir, "first", self.first_files, self.num_first_files, self.first_files_bytes, self.logger, self.config)
+        [self.first_files_dict, self.revidx_first_files] = Utils.calculate_sha1s(self.config.firstdir, "first", self.first_files, self.first_files_bytes, self.logger, self.config)
         self.timer.display(f" done ", "")
 
         if not self.config.single:
             # get the destination files
-            [self.second_files, self.second_files_bytes, self.num_second_dirs, self.num_second_files] = Utils.get_files_list(self.config.seconddir, "second", self.logger, self.config)
+            [self.second_files, self.second_files_bytes, self.num_second_dirs, self.num_second_files] = Utils.find_files(self.config.seconddir, "second", self.logger, self.config)
             self.timer.display(f" {self.num_second_files} files found ", "")
 
             # calculate second sha1s
             [self.second_files_dict, self.revidx_second_files] = Utils.calculate_sha1s(self.config.seconddir, "second", self.second_files,
-                                                                    self.num_second_files, self.second_files_bytes, self.logger, self.config)
+                                                                    self.second_files_bytes, self.logger, self.config)
             self.timer.display(f" done ", "")
 
             # get all duplicates in first
-            self.first_only_duplicates = Utils.get_duplicates_dict(self.first_files_dict, self.revidx_first_files, "first", self.logger, self.config)
+            self.first_only_duplicates = Utils.find_duplicates(self.first_files_dict, self.revidx_first_files, "first", self.logger, self.config)
             self.timer.display(f"done ", "")
 
             # get all duplicates in second
-            self.second_only_duplicates = Utils.get_duplicates_dict(self.second_files_dict, self.revidx_second_files, "second", self.logger, self.config)
+            self.second_only_duplicates = Utils.find_duplicates(self.second_files_dict, self.revidx_second_files, "second", self.logger, self.config)
             self.timer.display(f"done ", "")
 
             # Compare the files in first to those in second
@@ -209,7 +209,7 @@ class DirAnalyzer:
             self.timer.display(f"done ", ".")
         else:
             # just get duplicates in first
-            self.first_only_duplicates = Utils.get_duplicates_dict(self.first_files_dict, self.revidx_first_files, "first", self.logger, self.config)
+            self.first_only_duplicates = Utils.find_duplicates(self.first_files_dict, self.revidx_first_files, "first", self.logger, self.config)
             self.timer.display(f"done ", ".")
 
         # Get counts of buckets
