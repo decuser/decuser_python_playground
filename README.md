@@ -5,6 +5,8 @@ A repository for python scripts of interest
 20241221 I am in the process of refactoring the program in anticipation of adding a GUI (tkinter). Before I start on the GUI transition, I am modularizing, formalizing the configuration, adding logging (with all output being through the logger, vastly improving the progress tracking, adding explanatory comments, and generally making the code better. A lot of this is complete, but in testing. Once it's tested, I will merge it into master and it will become the next version, may as well call it version 1 at that point. The GUI version will most definitely be version 2. If you want to see the new code, as I work on it (I commit when I think it's working, but occasionally, it's got bugs), it's the pre-gui branch.
 
 # Version History
+* 20241220 v0.7.5 - Refactored globals, config, and logging
+* 20241217 v0.7.4 - Refactor prior to GUI integration
 * 20210804 v0.7.3 - Added compact output
 * 20210804 v0.7.2 - Bugfix: Issue with directories added to filelist
 * 20210804 v0.7.1 - Bugfix: -b -s flags not working
@@ -52,89 +54,93 @@ The utility isn't optimized, but it's good for most work. One of these days, I'l
 ## Test Run
 ```
 git clone https://github.com/decuser/decuser_python_playground.git
-cd decuser_python_playground/dircmp
+cd decuser_python_playground
+git branch -v -a
+git switch pre-gui
+cd dircmp
 python dircmp.py tests/src tests/dst
-
-+----------------------------------+
-| Welcome to dircmp version 0.7.3  |
-| Created by Will Senn on 20191210 |
-| Last updated 20210805            |
-+----------------------------------+
-Arguments: tests/src tests/dst
-Digest: sha1
-Source (src): tests/src/
-Destination (dst): tests/dst/
-Compact mode: False
-Single directory mode: False
-Show all files: False
-Recurse subdirectories: False
-Calculate shallow digests: False
-
-Scanning src ... 9 files found (0.01s).
-Calculating sha1 digests in src .... done (0.0s).
-Scanning dst ... 7 files found (0.0s).
-Calculating sha1 digests in dst ..... done (0.0s).
-Analyzing src directory ...done (0.0s).
-Analyzing dst directory ...done (0.0s).
-Comparing src to dst ...done (0.0s).
-Comparing dst to src ...done (0.0s).
-Checking for different names, same digest ...done (0.0s).
-
-Duplicates found in tests/src/: 6 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
-c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
-c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
-da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
-da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
-
-Duplicates found in tests/dst/: 2 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
-
-Exact matches: 4 files found.
-75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
-da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
-
-Only in tests/src/: 2 files found.
-c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
-c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
-
-Only in tests/dst/: 1 files found.
-36969b074153d1e76fbd43fb3d3c59802b5f730d only_in_dst
-
-Same names but different digests: 2 files found.
-in_both_diff_content src:e3bbf99ae9bb23804155b25a82a943e8757fc07a
-in_both_diff_content dst:2690814b054f2ddf3435a30a65506ce4bedba1d2
-
-Different names but same digests: 8 files found.
-0026a27ffa78a4a4963175c35fbee11c332049ed src:same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed src:same_in_both_copy
-0026a27ffa78a4a4963175c35fbee11c332049ed dst:same_in_both
-0026a27ffa78a4a4963175c35fbee11c332049ed dst:same_in_both_copy
-6476df3aac780622368173fe6e768a2edc3932c8 src:in_src_same_content_diff_name
-6476df3aac780622368173fe6e768a2edc3932c8 dst:in_dst_same_content_diff_name
-da39a3ee5e6b4b0d3255bfef95601890afd80709 src:empty
-da39a3ee5e6b4b0d3255bfef95601890afd80709 dst:empty_in_both
-
-Summary
--------
-Started at 2024-12-21 22:28:01.651505
-4 dirs, 16 files analyzed including tests/src/ and tests/dst/.
-0 dirs, 9 files found in tests/src/.
-2 dirs, 7 files found in tests/dst/.
-6 duplicate files found in tests/src/.
-2 duplicate files found in tests/dst/.
-4 exact matches found.
-2 files only exist in tests/src/.
-1 files only exist in tests/dst/.
-2 files have same names but different digests.
-8 files have different names but same digest.
-Finished at 2024-12-21 22:28:01.657768
-
-Total running time: 0.01s.
+2024-12-21 22:52:43,414 - dircmp - INFO - Started at 2024-12-21 22:52:43.414957
+2024-12-21 22:52:43,415 - dircmp - INFO - +----------------------------------+
+2024-12-21 22:52:43,415 - dircmp - INFO - | Welcome to dircmp version 0.7.5  |
+2024-12-21 22:52:43,415 - dircmp - INFO - | Created by Will Senn on 20191210 |
+2024-12-21 22:52:43,415 - dircmp - INFO - | Last updated 20241220            |
+2024-12-21 22:52:43,415 - dircmp - INFO - +----------------------------------+
+2024-12-21 22:52:43,415 - dircmp - INFO - Arguments:tests/src tests/dst
+2024-12-21 22:52:43,415 - dircmp - INFO - Digest: sha1
+2024-12-21 22:52:43,415 - dircmp - INFO - Source (first): tests/src/
+2024-12-21 22:52:43,415 - dircmp - INFO - Destination (second): tests/dst/
+2024-12-21 22:52:43,415 - dircmp - INFO - Compact mode: False
+2024-12-21 22:52:43,415 - dircmp - INFO - Single directory mode: False
+2024-12-21 22:52:43,415 - dircmp - INFO - Show all files: False
+2024-12-21 22:52:43,415 - dircmp - INFO - Recurse subdirectories: False
+2024-12-21 22:52:43,415 - dircmp - INFO - Calculate shallow digests: False
+2024-12-21 22:52:43,415 - dircmp - INFO - Scanning first ...
+2024-12-21 22:52:43,415 - dircmp - INFO -  9 files found (0.0s)
+2024-12-21 22:52:43,415 - dircmp - INFO - Calculating sha1 digests in first
+2024-12-21 22:52:43,416 - dircmp - INFO - Processed 135.0 Byte for digest (135.0 Byte of files), 0.0 Byte remaining (9/9 files processed).
+2024-12-21 22:52:43,416 - dircmp - INFO -  done (0.0s)
+2024-12-21 22:52:43,416 - dircmp - INFO - Scanning second ...
+2024-12-21 22:52:43,416 - dircmp - INFO -  7 files found (0.0s)
+2024-12-21 22:52:43,416 - dircmp - INFO - Calculating sha1 digests in second
+2024-12-21 22:52:43,416 - dircmp - INFO - Processed 130.0 Byte for digest (130.0 Byte of files), 0.0 Byte remaining (7/7 files processed).
+2024-12-21 22:52:43,416 - dircmp - INFO -  done (0.0s)
+2024-12-21 22:52:43,416 - dircmp - INFO - Analyzing first directory ...
+2024-12-21 22:52:43,417 - dircmp - INFO - done (0.0s)
+2024-12-21 22:52:43,417 - dircmp - INFO - Analyzing second directory ...
+2024-12-21 22:52:43,417 - dircmp - INFO - done (0.0s)
+2024-12-21 22:52:43,417 - dircmp - INFO - Comparing first to second ...
+2024-12-21 22:52:43,417 - dircmp - INFO - done (0.0s)
+2024-12-21 22:52:43,417 - dircmp - INFO - Comparing second to first ...
+2024-12-21 22:52:43,417 - dircmp - INFO - done (0.0s)
+2024-12-21 22:52:43,417 - dircmp - INFO - Checking for different names, same digest ...
+2024-12-21 22:52:43,417 - dircmp - INFO - done (0.0s).
+2024-12-21 22:52:43,417 - dircmp - INFO - Duplicates found in tests/src/: 6 files found.
+2024-12-21 22:52:43,417 - dircmp - INFO - 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+2024-12-21 22:52:43,417 - dircmp - INFO - 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+2024-12-21 22:52:43,417 - dircmp - INFO - c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+2024-12-21 22:52:43,417 - dircmp - INFO - c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+2024-12-21 22:52:43,417 - dircmp - INFO - da39a3ee5e6b4b0d3255bfef95601890afd80709 empty
+2024-12-21 22:52:43,417 - dircmp - INFO - da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+2024-12-21 22:52:43,417 - dircmp - INFO - Duplicates found in tests/dst/: 2 files found.
+2024-12-21 22:52:43,417 - dircmp - INFO - 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+2024-12-21 22:52:43,417 - dircmp - INFO - 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+2024-12-21 22:52:43,417 - dircmp - INFO - Exact matches: 4 files found.
+2024-12-21 22:52:43,417 - dircmp - INFO - 75093aa729169179c9dbbca6aa2d95a97865ca03 b_same_in_both
+2024-12-21 22:52:43,417 - dircmp - INFO - da39a3ee5e6b4b0d3255bfef95601890afd80709 empty_in_both
+2024-12-21 22:52:43,417 - dircmp - INFO - 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both
+2024-12-21 22:52:43,417 - dircmp - INFO - 0026a27ffa78a4a4963175c35fbee11c332049ed same_in_both_copy
+2024-12-21 22:52:43,417 - dircmp - INFO - Only in tests/src/: 2 files found.
+2024-12-21 22:52:43,417 - dircmp - INFO - c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src
+2024-12-21 22:52:43,418 - dircmp - INFO - c62a323c301dfb0f3cc8e27609c7f507d1965b64 only_in_src_copy
+2024-12-21 22:52:43,418 - dircmp - INFO - Only in tests/dst/: 1 files found.
+2024-12-21 22:52:43,418 - dircmp - INFO - 36969b074153d1e76fbd43fb3d3c59802b5f730d only_in_dst
+2024-12-21 22:52:43,418 - dircmp - INFO - Same names but different digests: 2 files found.
+2024-12-21 22:52:43,418 - dircmp - INFO - in_both_diff_content first:e3bbf99ae9bb23804155b25a82a943e8757fc07a
+2024-12-21 22:52:43,418 - dircmp - INFO - in_both_diff_content second:2690814b054f2ddf3435a30a65506ce4bedba1d2
+2024-12-21 22:52:43,418 - dircmp - INFO - Different names but same digests: 8 files found.
+2024-12-21 22:52:43,418 - dircmp - INFO - 0026a27ffa78a4a4963175c35fbee11c332049ed second:same_in_both_copy
+2024-12-21 22:52:43,418 - dircmp - INFO - 0026a27ffa78a4a4963175c35fbee11c332049ed second:same_in_both
+2024-12-21 22:52:43,418 - dircmp - INFO - 0026a27ffa78a4a4963175c35fbee11c332049ed first:same_in_both_copy
+2024-12-21 22:52:43,418 - dircmp - INFO - 0026a27ffa78a4a4963175c35fbee11c332049ed first:same_in_both
+2024-12-21 22:52:43,418 - dircmp - INFO - 6476df3aac780622368173fe6e768a2edc3932c8 second:in_dst_same_content_diff_name
+2024-12-21 22:52:43,418 - dircmp - INFO - 6476df3aac780622368173fe6e768a2edc3932c8 first:in_src_same_content_diff_name
+2024-12-21 22:52:43,418 - dircmp - INFO - da39a3ee5e6b4b0d3255bfef95601890afd80709 second:empty_in_both
+2024-12-21 22:52:43,418 - dircmp - INFO - da39a3ee5e6b4b0d3255bfef95601890afd80709 first:empty
+2024-12-21 22:52:43,418 - dircmp - INFO - Summary
+2024-12-21 22:52:43,418 - dircmp - INFO - Started at 2024-12-21 22:52:43.415547
+2024-12-21 22:52:43,418 - dircmp - INFO - 4 dirs, 16 files analyzed including tests/src/ and tests/dst/.
+2024-12-21 22:52:43,418 - dircmp - INFO - 0 dirs, 9 files found in tests/src/.
+2024-12-21 22:52:43,418 - dircmp - INFO - 2 dirs, 7 files found in tests/dst/.
+2024-12-21 22:52:43,418 - dircmp - INFO - 6 duplicate files found in tests/src/.
+2024-12-21 22:52:43,418 - dircmp - INFO - 2 duplicate files found in tests/dst/.
+2024-12-21 22:52:43,418 - dircmp - INFO - 4 exact matches found.
+2024-12-21 22:52:43,418 - dircmp - INFO - 2 files only exist in tests/src/.
+2024-12-21 22:52:43,418 - dircmp - INFO - 1 files only exist in tests/dst/.
+2024-12-21 22:52:43,418 - dircmp - INFO - 2 files have same names but different digests.
+2024-12-21 22:52:43,418 - dircmp - INFO - 8 files have different names but same digest.
+2024-12-21 22:52:43,418 - dircmp - INFO - Finished at 2024-12-21 22:52:43.418874
+2024-12-21 22:52:43,418 - dircmp - INFO - Total running time: 0.0s.
+2024-12-21 22:52:43,418 - dircmp - INFO - Finished at 2024-12-21 22:52:43.418949
 ```
 ## Known Issues
 
