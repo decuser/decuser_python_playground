@@ -76,12 +76,10 @@ class Utils:
                     logger.debug(
                         f"total byte: {total_bytes} - total bytes processed {total_bytes_processed} = total bytes remaining {total_bytes_remaining}")
 
-        total_files_processed += 1
         digest = hasher.hexdigest()
         logger.debug(f"Digest: {digest}")
 
         return {'start_time': start_time,
-                'total_files_processed': total_files_processed,
                 'total_bytes_processed': total_bytes_processed,
                 'total_bytes_remaining': total_bytes_remaining,
                 'total_bytes_accounted_for': total_bytes_processed,
@@ -138,9 +136,10 @@ class Utils:
                         total_bytes_remaining,
                         total_bytes_accounted_for)
 
+                    total_files_processed += 1
+
                     # Update variables based on the result
                     start_time = results['start_time']
-                    total_files_processed = results['total_files_processed']
                     total_bytes_processed = results['total_bytes_processed']
                     total_bytes_remaining = results['total_bytes_remaining']
                     total_bytes_accounted_for = results['total_bytes_accounted_for']
@@ -158,9 +157,11 @@ class Utils:
                         total_bytes_processed,
                         total_bytes_remaining,
                         total_bytes_accounted_for)
-                    #                    total_files_processed = results['files_processed']
+
+                    total_files_processed += 1
+
+                    # Update variables based on the result
                     start_time = results['start_time']
-                    total_files_processed = results['total_files_processed']
                     total_bytes_processed = results['total_bytes_processed']
                     total_bytes_remaining = results['total_bytes_remaining']
                     total_bytes_accounted_for = results['total_bytes_accounted_for']
@@ -225,9 +226,9 @@ class Utils:
                 - 'start_time' (float): Updated start time for progress tracking.
         """
         time_interval = config.PROGRESS_UPDATE_INTERVAL
-
-        hasher = hashlib.sha1()
         size = getsize(file_to_digest)
+        hasher = hashlib.sha1()
+
         logger.debug(f"size: {size}")
 
         # check if size <= 10 MB
@@ -246,51 +247,61 @@ class Utils:
                     buflen = len(buf)
                     total_bytes_processed += buflen
                     total_bytes_remaining -= buflen
+
                     elapsed_time = time.time() - start_time
                     if elapsed_time >= time_interval:
-                        percent = round((total_bytes_processed / total_bytes * 100), 2)
+                        percent = total_bytes_processed / total_bytes * 100
                         logger.info(
-                            f"Processed {percent}% - {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
+                            f"Processed {percent:0.1f}% - {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
                             f"({Utils.convert_bytes_to_human_readable(total_bytes_processed)} of {Utils.convert_bytes_to_human_readable(total_bytes)}), "
                             f"{Utils.convert_bytes_to_human_readable(total_bytes_remaining)} remaining "
                             f"({total_files_processed}/{total_files} files processed).")
                         start_time = time.time()
                 digest = hasher.hexdigest()
                 logger.debug(f"Digest: {digest}")
+
+            total_bytes_accounted_for += size
+
         else:
+            logger.debug("using shallow digest")
+
             with open(file_to_digest, "rb", config.BUFFERING) as afile:
-                # read and account for first block
                 hasher.update(str.encode(str(size)))
+
+                # read and account for first block
                 buf = afile.read(config.SAMPLESIZE)
                 buflen = len(buf)
                 total_bytes_processed += buflen
                 hasher.update(buf)
 
-                # read and account for second block
+                # seek to beginning of the last chunk of file
                 afile.seek(size - config.SAMPLESIZE)
+
+                # read and account for second block
                 buf = afile.read(config.SAMPLESIZE)
                 buflen = len(buf)
                 total_bytes_processed += buflen
                 hasher.update(buf)
+
+            total_bytes_accounted_for += size
+            total_bytes_remaining -= size
 
             # if it took a while, put out a log message
             elapsed_time = time.time() - start_time
             if elapsed_time >= time_interval:
-                percent = round((total_bytes_accounted_for / total_bytes * 100), 2)
+                percent = total_bytes_processed / total_bytes * 100
                 logger.info(
-                    f"Processed {percent}% - {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
-                    f"({Utils.convert_bytes_to_human_readable(total_bytes_processed)} of {Utils.convert_bytes_to_human_readable(total_bytes)}), "
+                    f"Processed {percent:0.1f}% - {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
+                    f"({Utils.convert_bytes_to_human_readable(total_bytes_accounted_for)} of {Utils.convert_bytes_to_human_readable(total_bytes)}), "
                     f"{Utils.convert_bytes_to_human_readable(total_bytes_remaining)} remaining "
                     f"({total_files_processed}/{total_files} files processed).")
                 start_time = time.time()
 
-        # update totals
-        total_bytes_accounted_for += size
-        total_bytes_remaining -= size
-        total_files_processed += 1
 
-        digest = hasher.hexdigest()
-        logger.debug(digest)
+            digest = hasher.hexdigest()
+            logger.debug(digest)
+
+        total_files_processed += 1
 
         return {'start_time': start_time,
                 'total_files_processed': total_files_processed,
@@ -320,7 +331,7 @@ class Utils:
     @staticmethod
     def convert_bytes_to_human_readable(numbytes):
         """
-        Return the given bytes as a human friendly kb, mb, gb, or tb string.
+        Return the given bytes as a human friendly K, M, G, or T string.
 
         xref: https://stackoverflow.com/a/31631711
         """
@@ -333,13 +344,13 @@ class Utils:
         if numbytes < kb:
             return '{0} {1}'.format(numbytes, 'Bytes' if 0 == numbytes > 1 else 'Byte')
         elif kb <= numbytes < mb:
-            return '{0:.2f} KB'.format(numbytes / kb)
+            return '{0:.1f}K'.format(numbytes / kb)
         elif mb <= numbytes < gb:
-            return '{0:.2f} mb'.format(numbytes / mb)
+            return '{0:.1f}M'.format(numbytes / mb)
         elif gb <= numbytes < tb:
-            return '{0:.2f} gb'.format(numbytes / gb)
+            return '{0:.1f}G'.format(numbytes / gb)
         elif tb <= numbytes:
-            return '{0:.2f} tb'.format(numbytes / tb)
+            return '{0:.1f}T'.format(numbytes / tb)
 
     @staticmethod
     def display_command_line(logger):
