@@ -2,19 +2,19 @@
 A repository for python scripts of interest
 
 # News
-# 20210804 v0.7.3 - Added compact output
-# 20210804 v0.7.2 - Bugfix: Issue with directories added to filelist
-# 20210804 v0.7.1 - Bugfix: -b -s flags not working
-# 20210802 v0.7.0 - Added single directory support and fixed counting
-# 20200620 v0.6.2 - Added version argument
-# 20191218 v0.6.1 - Bugfixes: Empty source dir and hidden files issue
-# 20191218 v0.6.0 - Refactored, embraced global data structures
-# 20191216 v0.5.1 - Added fast digest support
-# 20191212 v0.5.0 - Added recursion, hidden file support, and version scheme change
-# 20191210 v0.4.0 - Refactor, comments, added same name diff digest
-# 20191210 v0.3.0 - Added argparse functionality and brief mode
-# 20191210 v0.2.0 - Added duplicate checking in src and dst
-# 20191210 v0.1.0 - Initial working version
+### 20210804 v0.7.3 - Added compact output
+### 20210804 v0.7.2 - Bugfix: Issue with directories added to filelist
+### 20210804 v0.7.1 - Bugfix: -b -s flags not working
+### 20210802 v0.7.0 - Added single directory support and fixed counting
+### 20200620 v0.6.2 - Added version argument
+### 20191218 v0.6.1 - Bugfixes: Empty source dir and hidden files issue
+### 20191218 v0.6.0 - Refactored, embraced global data structures
+### 20191216 v0.5.1 - Added fast digest support
+### 20191212 v0.5.0 - Added recursion, hidden file support, and version scheme change
+### 20191210 v0.4.0 - Refactor, comments, added same name diff digest
+### 20191210 v0.3.0 - Added argparse functionality and brief mode
+### 20191210 v0.2.0 - Added duplicate checking in src and dst
+### 20191210 v0.1.0 - Initial working version
 
 # First up - dircmp.py, a *nix utility to compare two directories
 What it does is:
