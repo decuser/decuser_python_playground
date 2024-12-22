@@ -26,7 +26,7 @@ class AppConfig:
 
         # Logic Constants
         self.BLOCKSIZE = 65536
-        self.SAMPLESIZE = (1 * 1024 * 1024)
+        self.SAMPLESIZE = (10 * 1024 * 1024)
         self.BUFFERING = -1  # 0 for no buffering, -1 for default
         self.SEED = (10 * 1024 * 1024)
         self.PROGRESS_UPDATE_INTERVAL = 1

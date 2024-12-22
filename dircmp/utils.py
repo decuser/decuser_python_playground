@@ -189,7 +189,7 @@ class Utils:
             start_time,
             total_files,
             total_files_processed,
-            total_file_bytes,
+            total_bytes,
             total_bytes_processed,
             total_bytes_remaining,
             total_bytes_accounted_for):
@@ -209,7 +209,7 @@ class Utils:
             total_files_processed (int): Number of files processed so far.
             total_files (int): Total number of files to process.
             total_bytes_processed (int): Total bytes processed across all files.
-            total_file_bytes (int): Total bytes across all files being processed.
+            total_bytes (int): Total bytes across all files being processed.
             total_bytes_remaining (int): Remaining bytes to be processed.
             total_bytes_accounted_for (int): Bytes accounted for by the digests so far.
             logger (Logger): Logger instance for progress and debug messages.
@@ -228,52 +228,67 @@ class Utils:
 
         hasher = hashlib.sha1()
         size = getsize(file_to_digest)
-        total_bytes_accounted_for += size
         logger.debug(f"size: {size}")
 
         # check if size <= 10 MB
-        if size <= (10 * 1024 * 1024):
+        if size <= (10 * 1024 * 1024) or size <= 2 * config.SAMPLESIZE:
             logger.debug("using regular digest")
 
             # regular digest
-            with open(file_to_digest, 'rb', config.BUFFERING) as afile:
+            with open(file_to_digest, "rb", config.BUFFERING) as afile:
                 buf = afile.read(config.BLOCKSIZE)
                 buflen = len(buf)
+                total_bytes_processed += buflen
+                total_bytes_remaining -= buflen
                 while buflen > 0:
-                    total_bytes_processed += buflen
-                    elapsed_time = time.time() - start_time
-                    if elapsed_time >= time_interval:
-                        percent = round((total_bytes_accounted_for / total_file_bytes * 100), 2)
-                        logger.info(
-                            f"Processed {percent}% - {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
-                            f"({Utils.convert_bytes_to_human_readable(total_bytes_accounted_for)} of files), "
-                            f"{Utils.convert_bytes_to_human_readable(total_bytes_remaining)} remaining "
-                            f"({total_files_processed}/{total_files} files processed).")
-                        start_time = time.time()
                     hasher.update(buf)
                     buf = afile.read(config.BLOCKSIZE)
                     buflen = len(buf)
+                    total_bytes_processed += buflen
+                    total_bytes_remaining -= buflen
+                    elapsed_time = time.time() - start_time
+                    if elapsed_time >= time_interval:
+                        percent = round((total_bytes_processed / total_bytes * 100), 2)
+                        logger.info(
+                            f"Processed {percent}% - {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
+                            f"({Utils.convert_bytes_to_human_readable(total_bytes_processed)} of {Utils.convert_bytes_to_human_readable(total_bytes)}), "
+                            f"{Utils.convert_bytes_to_human_readable(total_bytes_remaining)} remaining "
+                            f"({total_files_processed}/{total_files} files processed).")
+                        start_time = time.time()
+                digest = hasher.hexdigest()
+                logger.debug(f"Digest: {digest}")
         else:
             with open(file_to_digest, "rb", config.BUFFERING) as afile:
+                # read and account for first block
                 hasher.update(str.encode(str(size)))
                 buf = afile.read(config.SAMPLESIZE)
                 buflen = len(buf)
                 total_bytes_processed += buflen
                 hasher.update(buf)
+
+                # read and account for second block
                 afile.seek(size - config.SAMPLESIZE)
                 buf = afile.read(config.SAMPLESIZE)
+                buflen = len(buf)
+                total_bytes_processed += buflen
                 hasher.update(buf)
+
+            # if it took a while, put out a log message
             elapsed_time = time.time() - start_time
             if elapsed_time >= time_interval:
-                percent = round((total_bytes_accounted_for / total_file_bytes * 100), 2)
+                percent = round((total_bytes_accounted_for / total_bytes * 100), 2)
                 logger.info(
                     f"Processed {percent}% - {Utils.convert_bytes_to_human_readable(total_bytes_processed)} for digest "
-                    f"({Utils.convert_bytes_to_human_readable(total_bytes_accounted_for)} of files), "
+                    f"({Utils.convert_bytes_to_human_readable(total_bytes_processed)} of {Utils.convert_bytes_to_human_readable(total_bytes)}), "
                     f"{Utils.convert_bytes_to_human_readable(total_bytes_remaining)} remaining "
                     f"({total_files_processed}/{total_files} files processed).")
                 start_time = time.time()
+
+        # update totals
+        total_bytes_accounted_for += size
         total_bytes_remaining -= size
         total_files_processed += 1
+
         digest = hasher.hexdigest()
         logger.debug(digest)
 
@@ -446,25 +461,28 @@ class Utils:
     @staticmethod
     def find_files(dir_to_analyze, displayname, logger, config):
         """
-        Retrieves a list of files and directories in a specified directory,
-        and calculates the total size and counts of files and directories.
+              Retrieves a list of files and directories in a specified directory,
+              and calculates the total size and counts of files and directories.
 
-        Parameters:
-        dir_to_analyze (str): The directory to analyze, including the trailing slash.
-        displayname (str): A string to log, indicating the directory being scanned.
-        logger (Logger): The logger instance used for logging output.
-        config (Config): The configuration object for the operation.
+              Parameters:
+              dir_to_analyze (str): The directory to analyze, including the trailing slash.
+              displayname (str): A string to log, indicating the directory being scanned.
+              logger (Logger): The logger instance used for logging output.
+              config (Config): The configuration object for the operation.
 
-        Returns:
-        tuple: A tuple containing:
-            - files (list): A list of files in the directory.
-            - files_bytes (int): Total size in bytes of the files.
-            - num_dirs (int): The number of directories in the directory.
-            - num_files (int): The number of files in the directory.
-        """
+              Returns:
+              tuple: A tuple containing:
+                  - files (list): A list of files in the directory.
+                  - files_bytes (int): Total size in bytes of the files.
+                  - num_dirs (int): The number of directories in the directory.
+                  - num_files (int): The number of files in the directory.
+              """
         if not (config.brief or config.compact):
             logger.info(f"Scanning {displayname} ...")
 
+        start_time = time.time()
+        scanned_files_dirs = 0
+        time_interval = config.PROGRESS_UPDATE_INTERVAL
         total_files = 0
         total_dirs = 0
         all_files = []
@@ -472,10 +490,19 @@ class Utils:
         def should_include(name):
             return config.all or not name.startswith('.')
 
+        def log_progress():
+            nonlocal start_time, scanned_files_dirs
+            elapsed_time = time.time() - start_time
+            if elapsed_time >= time_interval:
+                logger.info(f"Scanning... {scanned_files_dirs} files/dirs.")
+                start_time = time.time()
+
         def process_directory(path, recurse=False):
-            nonlocal total_files, total_dirs, all_files
+            nonlocal total_files, total_dirs, all_files, scanned_files_dirs
             with scandir(path) as it:
                 for entry in it:
+                    scanned_files_dirs += 1
+                    log_progress()
                     if should_include(entry.name):
                         if entry.is_dir():
                             total_dirs += 1
