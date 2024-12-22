@@ -2,6 +2,9 @@
 A repository for python scripts of interest
 
 # News
+I am in the process of refactoring the program in anticipation of adding a GUI (tkinter). Before I start on the GUI transition, I am modularizing, formalizing the configuration, adding logging (with all output being through the logger, vastly improving the progress tracking, adding explanatory comments, and generally making the code better. A lot of this is complete, but in testing. Once it's tested, I will merge it into master and it will become the next version, may as well call it version 1 at that point. The GUI version will most definitely be version 2. If you want to see the new code, as I work on it (I commit when I think it's working, but occasionally, it's got bugs), it's the pre-gui branch.
+
+# Version History
 * 20210804 v0.7.3 - Added compact output
 * 20210804 v0.7.2 - Bugfix: Issue with directories added to filelist
 * 20210804 v0.7.1 - Bugfix: -b -s flags not working
