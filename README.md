@@ -1,3 +1,7 @@
+# This repo is archived and is read only. Visit Sourceforge for the current status of the project and source: [Decuser's dircmp project on Sourceforge](https://sourceforge.net/projects/decuser-dircmp/)
+
+
+
 # decuser_python_playground
 A repository for python scripts of interest
 
